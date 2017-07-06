@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><target name="RemotePortMapper" type="virtual">
+    <output name=""/>
+    <outdir path=""/>
+    <middir path=""/>
+    <introduction>
+      Sandnix 0.0.2 configuration tool.
+    </introduction>
+    <archs actived="Linux">
+        <arch name="Windows">
+            <PREV></PREV>
+            <ARCHDEF>-DWINDOWS</ARCHDEF>
+            <DEP>x86_64-w64-mingw32-gcc</DEP>
+            <DEPFLAGS></DEPFLAGS>
+            <DEPRULE>$(DEP) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
+            <CC>x86_64-w64-mingw32-gcc</CC>
+            <CFLAGS>-c $(ARCHDEF)</CFLAGS>
+            <CCRULE>$(CC) $(CFLAGS) -o $@ $&lt;</CCRULE>
+            <AS>x86_64-w64-mingw32-gcc</AS>
+            <ASFLAGS>-c $(ARCHDEF)</ASFLAGS>
+            <ASRULE>$(AS) $(ASFLAGS) -o $@ $&lt;</ASRULE>
+            <LD>x86_64-w64-mingw32-gcc</LD>
+            <LDFLAGS>$(LD) $(LDFLAGS) -o $@ $^</LDFLAGS>
+            <LDRULE>$(LD) $(LDFLAGS) -o $@ $^</LDRULE>
+            <AR></AR>
+            <ARRULE></ARRULE>
+            <AFTER></AFTER>
+        </arch>
+        <arch name="Linux">
+            <PREV></PREV>
+            <ARCHDEF>-DLINUX</ARCHDEF>
+            <DEP>gcc</DEP>
+            <DEPFLAGS></DEPFLAGS>
+            <DEPRULE>$(DEP) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
+            <CC>gcc</CC>
+            <CFLAGS>-c $(ARCHDEF)</CFLAGS>
+            <CCRULE>$(CC) $(CFLAGS) -o $@ $&lt;</CCRULE>
+            <AS>gcc</AS>
+            <ASFLAGS>-c $(ARCHDEF)</ASFLAGS>
+            <ASRULE>$(AS) $(ASFLAGS) -o $@ $&lt;</ASRULE>
+            <LD>gcc</LD>
+            <LDFLAGS>$(LD) $(LDFLAGS) -o $@ $^</LDFLAGS>
+            <LDRULE>$(LD) $(LDFLAGS) -o $@ $^</LDRULE>
+            <AR></AR>
+            <ARRULE></ARRULE>
+            <AFTER></AFTER>
+        </arch>
+    </archs>
+    <dependencies>
+    </dependencies>
+    <sub-targets>
+        <target enable="true" path="src/client/target.xml"/>
+        <target enable="true" path="src/proxy/target.xml"/>
+        <target enable="true" path="src/server/target.xml"/>
+    </sub-targets>
+    <options>
+    </options>
+</target>
