@@ -22,18 +22,20 @@ using namespace std;
 
 //Element
 Config::ConfigElement::ConfigElement(cfg_element_type_t type,
-                                     ConfigElement* p_parent)
+                                     ConfigElement* p_parent,
+                                     pthread_mutex_t* p_lock)
 {
 
     this->m_type = type;
     this->m_p_parent = p_parent;
     this->m_ref_count = 1;
+    this->m_p_lock = p_lock;
 
     if(type == ELEMENT_TYPE_VALUE) {
         this->m_p_value = NULL;
 
     } else {
-        this->m_p_value = new map<std::string, ConfigElement*>();
+        this->m_p_value = new map<string, ConfigElement*>();
     }
 
     return;
@@ -48,14 +50,14 @@ void Config::ConfigElement::release()
         if(this->m_type == ELEMENT_TYPE_VALUE) {
             //Free value
             if(this->m_p_value != NULL) {
-                delete(std::string*)(this->m_p_value);
+                delete(string*)(this->m_p_value);
             }
 
         } else {
             //Free all children
-            map<std::string, ConfigElement*>* p_child_map =
-                (map<std::string, ConfigElement*>*)(this->m_p_value);
-            map<std::string, ConfigElement*>::iterator iter;
+            map<string, ConfigElement*>* p_child_map =
+                (map<string, ConfigElement*>*)(this->m_p_value);
+            map<string, ConfigElement*>::iterator iter;
 
             for(iter = p_child_map->begin();
                 iter != p_child_map->end();
@@ -74,41 +76,85 @@ void Config::ConfigElement::release()
     return;
 }
 
-bool Config::ConfigElement::set_value(std::string val)
+bool Config::ConfigElement::set_value(string val)
 {
     if(this->m_type != ELEMENT_TYPE_VALUE) {
         return false;
     }
 
     if(this->m_p_value != NULL) {
-        delete(std::string*)(this->m_p_value);
+        delete(string*)(this->m_p_value);
     }
 
-    this->m_p_value = new std::string(val);
+    this->m_p_value = new string(val);
 
     return true;
 }
 
 bool Config::ConfigElement::set_value(char* value)
 {
-    std::string *s = new std::string(value);
+    string *s = new string(value);
     bool ret = this->set_value(*s);
     delete s;
     return ret;
 }
 
-/*
-std::string* Config::ConfigElement::get_value();
-bool Config::ConfigElement::add_child(cfg_element_type_t type, std::string name);
-bool Config::ConfigElement::add_child(cfg_element_type_t type, char* name);
-*/
+bool Config::ConfigElement::get_value(string& ret)
+{
+    if(this->m_type != ELEMENT_TYPE_VALUE) {
+        return false;
 
-bool Config::ConfigElement::remove_child(std::string key)
+    } else {
+        if(this->m_p_value == NULL) {
+            ret = "";
+
+        } else {
+            ret = *((string*)(this->m_p_value));
+        }
+
+        return true;
+    }
+}
+
+bool Config::ConfigElement::add_child(cfg_element_type_t type, string key)
+{
+    if(this->m_type != ELEMENT_TYPE_NODE) {
+        return false;
+    }
+
+    //Check if the key exists
+    map<string, ConfigElement*>* p_child_map =
+        (map<string, ConfigElement*>*)(this->m_p_value);
+
+    if(p_child_map->find(key) != p_child_map->end()) {
+        return false;
+    }
+
+    //Create key
+    ConfigElement* p_new = new ConfigElement(type,
+            this,
+            this->m_p_lock);
+
+    //Add new element
+    (*p_child_map)[key] = p_new;
+
+    return true;
+}
+
+bool Config::ConfigElement::add_child(cfg_element_type_t type, char* key)
+{
+    string *s = new string(key);
+    bool ret = this->add_child(type, *s);
+    delete s;
+    return ret;
+}
+
+bool Config::ConfigElement::remove_child(string key)
 {
     //Get iterator
-    map<std::string, ConfigElement*>* p_child_map =
-        (map<std::string, ConfigElement*>*)(this->m_p_value);
-    map<std::string, ConfigElement*>::iterator pos = p_child_map->find(key);
+    map<string, ConfigElement*>* p_child_map =
+        (map<string, ConfigElement*>*)(this->m_p_value);
+    map<string, ConfigElement*>::iterator pos = p_child_map->find(key);
 
     if(pos == p_child_map->end()) {
         return false;
@@ -124,16 +170,28 @@ bool Config::ConfigElement::remove_child(std::string key)
 
 bool Config::ConfigElement::remove_child(char* key)
 {
-    std::string *s = new std::string(key);
+    string *s = new string(key);
     bool ret = this->remove_child(*s);
     delete s;
     return ret;
 }
 /*
-ConfigElement* Config::ConfigElement::get_child(std::string key);
-ConfigElement* Config::ConfigElement::get_child(char* key);
-std::list<std::string>* Config::ConfigElement::list_children();
+ConfigElement* Config::ConfigElement::get_child(string path);
+ConfigElement* Config::ConfigElement::get_child(char* path);
+list<string>* Config::ConfigElement::list_children();
 Config::ConfigElement::~ConfigElement();
 */
+
+void Config::ConfigElement::lock()
+{
+    pthread_mutex_lock(this->m_p_lock);
+    return;
+}
+
+void Config::ConfigElement::unlock()
+{
+    pthread_mutex_unlock(this->m_p_lock);
+    return;
+}
 //Config
 Config* Config::p_instance = NULL;

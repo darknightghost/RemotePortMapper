@@ -19,6 +19,8 @@
 
 #include "../types.h"
 
+#include <pthread.h>
+
 #include <map>
 #include <string>
 #include <list>
@@ -47,9 +49,13 @@ class Config {
                 //Reference count
                 u32						m_ref_count;
 
+                //Lock
+                pthread_mutex_t*		m_p_lock;
+
                 //Member functions
             public:
-                ConfigElement(cfg_element_type_t type, ConfigElement* p_parent);
+                ConfigElement(cfg_element_type_t type, ConfigElement* p_parent,
+                              pthread_mutex_t* p_lock);
 
                 //Unreference element
                 void	release();
@@ -59,7 +65,7 @@ class Config {
                 bool	set_value(char* value);
 
                 //Get value
-                std::string* get_value();
+                bool	get_value(std::string& ret);
 
                 //Add child
                 bool	add_child(cfg_element_type_t type, std::string key);
@@ -70,11 +76,18 @@ class Config {
                 bool	remove_child(char* key);
 
                 //Get child
-                ConfigElement*	get_child(std::string key);
-                ConfigElement*	get_child(char* key);
+                ConfigElement*	get_child(std::string path);
+                ConfigElement*	get_child(char* path);
 
                 //List children
                 std::list<std::string>*	list_children();
+
+                //Lock
+                void	lock();
+
+                //Unlock
+                void	unlock();
+
             private:
                 ~ConfigElement();
         };
@@ -95,6 +108,8 @@ class Config {
     private:
         Config(char* paths[], u32 num);
         ~Config();
+
+        static	pthread_mutex_t		cfg_lock;
 
     protected:
         //Called to load file, implement by child classes.
@@ -118,5 +133,11 @@ class Config {
 
         //Unreference instance
         void	release();
+
+        //Lock
+        void	lock();
+
+        //Unlock
+        void	unlock();
 
 };
