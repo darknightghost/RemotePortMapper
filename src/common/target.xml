@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><target name="common" type="build">
+    <output name="common.a"/>
+    <outdir path="../../lib/$(ARCH)/common"/>
+    <middir path="../../obj/$(ARCH)/common"/>
+    <introduction>
+        Proxy
+    </introduction>
+    <archs>
+        <arch name="Linux">
+            <PREV></PREV>
+            <ARCHDEF>-DLINUX</ARCHDEF>
+            <DEP>g++</DEP>
+            <DEPFLAGS>$(ARCHDEF)</DEPFLAGS>
+            <DEPRULE>$(DEP) $(DEPFLAGS) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
+            <CC>g++</CC>
+            <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++11 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
+            <CCRULE>$(CC) $(CFLAGS) -c -o $@ $&lt;</CCRULE>
+            <AS>g++</AS>
+            <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++11 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
+            <ASRULE>$(AS) -c $(ASFLAGS) -o $@ $&lt;</ASRULE>
+            <LD>ar</LD>
+            <LDFLAGS>rcs</LDFLAGS>
+            <LDRULE>$(LD) $(LDFLAGS) $@ $^</LDRULE>
+            <AR>ar</AR>
+            <ARRULE>$(AR) rcs $@ $^</ARRULE>
+            <AFTER>cp $(LINKED) $(OUTDIR)/$(OUTPUT)</AFTER>
+        </arch>
+        <arch name="Windows">
+            <PREV></PREV>
+            <ARCHDEF>-DWINDOWS</ARCHDEF>
+            <DEP>x86_64-w64-mingw32-g++</DEP>
+            <DEPFLAGS>$(ARCHDEF)</DEPFLAGS>
+            <DEPRULE>$(DEP) $(DEPFLAGS) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
+            <CC>x86_64-w64-mingw32-g++</CC>
+            <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++11 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
+            <CCRULE>$(CC) $(CFLAGS) -c -o $@ $&lt;</CCRULE>
+            <AS>x86_64-w64-mingw32-g++</AS>
+            <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++11 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
+            <ASRULE>$(AS) -c $(ASFLAGS) -o $@ $&lt;</ASRULE>
+            <LD>x86_64-w64-mingw32-ar</LD>
+            <LDFLAGS>rcs</LDFLAGS>
+            <LDRULE>$(LD) $(LDFLAGS) $@ $^</LDRULE>
+            <AR>x86_64-w64-mingw32-ar</AR>
+            <ARRULE>$(AR) rcs $@ $^</ARRULE>
+            <AFTER>cp $(LINKED) $(OUTDIR)/$(OUTPUT)</AFTER>
+        </arch>
+    </archs>
+    <dependencies>
+    </dependencies>
+    <sub-targets>
+    </sub-targets>
+    <options>
+        <option name="Compile options." type="menu">
+            <option name="Compile optimization" selected="0" target="CFLAGS|ASFLAGS" type="list">
+                <item name="0" value="-O0"/>
+                <item name="1" value="-O1"/>
+                <item name="2" value="-O2"/>
+            </option>
+            <option enable="true" name="Build with symbols." target="CFLAGS|ASFLAGS" type="checkbox" value="-ggdb"/>
+        </option>
+    </options>
+</target>

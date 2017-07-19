@@ -9,3 +9,4 @@ obj/*
 bin/*
 __pycache__/*
 .vscode/*
+lib/*

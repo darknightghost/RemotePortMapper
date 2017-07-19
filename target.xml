@@ -48,9 +48,10 @@
     <dependencies>
     </dependencies>
     <sub-targets>
-        <target enable="true" path="src/client/target.xml"/>
-        <target enable="true" path="src/proxy/target.xml"/>
-        <target enable="true" path="src/server/target.xml"/>
+        <target enable="false" path="src/client/target.xml"/>
+        <target enable="false" path="src/proxy/target.xml"/>
+        <target enable="false" path="src/server/target.xml"/>
+        <target enable="true" path="src/common/target.xml"/>
     </sub-targets>
     <options>
     </options>

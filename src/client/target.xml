@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><target name="Client" type="build">
     <output name="client"/>
-    <outdir path="../../../bin/$(ARCH)/client"/>
-    <middir path="../../../obj/$(ARCH)/client"/>
+    <outdir path="../../bin/$(ARCH)/client"/>
+    <middir path="../../obj/$(ARCH)/client"/>
     <introduction>
         Client
     </introduction>
@@ -9,16 +9,16 @@
         <arch name="Windows">
             <PREV></PREV>
             <ARCHDEF>-DWINDOWS</ARCHDEF>
-            <DEP>x86_64-w64-mingw32-gcc</DEP>
+            <DEP>x86_64-w64-mingw32-g++</DEP>
             <DEPFLAGS>$(ARCHDEF)</DEPFLAGS>
             <DEPRULE>$(DEP) $(DEPFLAGS) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
-            <CC>x86_64-w64-mingw32-gcc</CC>
-            <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
+            <CC>x86_64-w64-mingw32-g++</CC>
+            <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
             <CCRULE>$(CC) $(CFLAGS) -c -o $@ $&lt;</CCRULE>
-            <AS>x86_64-w64-mingw32-gcc</AS>
-            <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
+            <AS>x86_64-w64-mingw32-g++</AS>
+            <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
             <ASRULE>$(AS) -c $(ASFLAGS) -o $@ $&lt;</ASRULE>
-            <LD>x86_64-w64-mingw32-gcc</LD>
+            <LD>x86_64-w64-mingw32-g++</LD>
             <LDFLAGS></LDFLAGS>
             <LDRULE>$(LD) $(LDFLAGS) -o $@ $^</LDRULE>
             <AR>x86_64-w64-mingw32-ar</AR>
@@ -28,16 +28,16 @@
         <arch name="Linux">
             <PREV></PREV>
             <ARCHDEF>-DLINUX</ARCHDEF>
-            <DEP>gcc</DEP>
+            <DEP>g++</DEP>
             <DEPFLAGS>$(ARCHDEF)</DEPFLAGS>
             <DEPRULE>$(DEP) $(DEPFLAGS) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
-            <CC>gcc</CC>
-            <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
+            <CC>g++</CC>
+            <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
             <CCRULE>$(CC) $(CFLAGS) -c -o $@ $&lt;</CCRULE>
-            <AS>gcc</AS>
-            <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
+            <AS>g++</AS>
+            <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu++99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
             <ASRULE>$(AS) -c $(ASFLAGS) -o $@ $&lt;</ASRULE>
-            <LD>gcc</LD>
+            <LD>g++</LD>
             <LDFLAGS></LDFLAGS>
             <LDRULE>$(LD) $(LDFLAGS) -o $@ $^</LDRULE>
             <AR>ar</AR>
@@ -46,6 +46,7 @@
         </arch>
     </archs>
     <dependencies>
+        <dep depstage="LINK" path="../common/target.xml"/>
     </dependencies>
     <sub-targets>
     </sub-targets>

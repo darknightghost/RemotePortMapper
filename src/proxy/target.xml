@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><target name="Proxy" type="build">
+<?xml version="1.0" encoding="utf-8"?><target name="proxy" type="build">
     <output name="proxy"/>
-    <outdir path="../../../bin/$(ARCH)/proxy"/>
-    <middir path="../../../obj/$(ARCH)/proxy"/>
+    <outdir path="../../bin/$(ARCH)/proxy"/>
+    <middir path="../../obj/$(ARCH)/proxy"/>
     <introduction>
-        Proxy
+        Client
     </introduction>
     <archs>
         <arch name="Linux">
             <PREV></PREV>
             <ARCHDEF>-DLINUX</ARCHDEF>
-            <DEP>gcc</DEP>
+            <DEP>g++</DEP>
             <DEPFLAGS>$(ARCHDEF)</DEPFLAGS>
             <DEPRULE>$(DEP) $(DEPFLAGS) -MM $&lt; | awk 'NR == 1 {printf(&quot;%s%s\n&quot;,&quot;$(dir $@)&quot;,$$0)} NR != 1 {print $$0}' | cat &gt; $@</DEPRULE>
-            <CC>gcc</CC>
+            <CC>g++</CC>
             <CFLAGS>-Wall $(ARCHDEF) -Werror-implicit-function-declaration -Wunused-parameter -std=gnu99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</CFLAGS>
             <CCRULE>$(CC) $(CFLAGS) -c -o $@ $&lt;</CCRULE>
-            <AS>gcc</AS>
+            <AS>g++</AS>
             <ASFLAGS>$(ARCHDEF) -D_ASM -Wall -Werror-implicit-function-declaration -Wunused-parameter -std=gnu99 -Werror -fno-strict-aliasing -Wno-strict-aliasing</ASFLAGS>
             <ASRULE>$(AS) -c $(ASFLAGS) -o $@ $&lt;</ASRULE>
-            <LD>gcc</LD>
+            <LD>g++</LD>
             <LDFLAGS></LDFLAGS>
             <LDRULE>$(LD) $(LDFLAGS) -o $@ $^</LDRULE>
             <AR>ar</AR>
@@ -27,6 +27,7 @@
         </arch>
     </archs>
     <dependencies>
+         <dep depstage="LINK" path="../proxy/target.xml"/>
     </dependencies>
     <sub-targets>
     </sub-targets>
