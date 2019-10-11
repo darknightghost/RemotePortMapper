@@ -56,7 +56,7 @@ class arch:
         except TypeErrot:
             raise MissingAttribute(self.path, "arch", "name")
         
-        #Makeflie variables
+        #Makefile variables
         #[node, value]
         self.build_dict = {}
         for k in arch.tag_list:
@@ -72,7 +72,7 @@ class arch:
         return
 
     def __restore__(self):
-        #Makeflie variables
+        #Makefile variables
         #[node, value]
         for k in arch.tag_list:
             if len(self.build_dict[k][0].childNodes) == 0:
