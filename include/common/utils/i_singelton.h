@@ -14,7 +14,7 @@ namespace remotePortMapper {
  * @tparam  Type    Class type.
  */
 template<class Type>
-class ISingleton : public IInitialized {
+class ISingleton : virtual public IInitialized {
   private:
     static ::std::shared_ptr<Type> _instance;     ///< Instance.
     static ::std::mutex            _instanceLock; ///< Instance lock.
@@ -46,7 +46,7 @@ class ISingleton : public IInitialized {
      *              the existing instance.
      */
     template<typename... Args>
-    static ::std::shared_ptr<Type> initialize(Args... args)
+    static ::std::shared_ptr<Type> initialize(Args &&...args)
     {
         ::std::unique_lock<::std::mutex> lock(_instanceLock);
         if (_instance == nullptr) {
