@@ -273,6 +273,32 @@ class Result {
                 && (! ::std::is_copy_assignable<Type>::value)
     inline void copyValue(const Result &result);
 
+    /**
+     * @brief       Copy construct value(void).
+     *
+     * @tparam      Type    Value type.
+     *
+     * @param[in]   result  Result to copy the value.
+     */
+    template<typename Type>
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
+                && ::std::is_void<Type>::value
+    inline void copyConstructValue(const Result &result);
+
+    /**
+     * @brief       Copy construct value(else).
+     *
+     * @tparam      Type    Value type.
+     *
+     * @param[in]   result  Result to copy the value.
+     */
+    template<typename Type>
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
+                && (! ::std::is_void<Type>::value)
+    inline void copyConstructValue(const Result &result);
+
   private:
     // Move.
     /**
@@ -355,6 +381,32 @@ class Result {
                 && (! ::std::is_move_assignable<Type>::value)
                 && (! ::std::is_copy_assignable<Type>::value)
     inline void moveValue(Result &&result);
+
+    /**
+     * @brief       Move construct value(void).
+     *
+     * @tparam      Type    Value type.
+     *
+     * @param[in]   result  Result to move the value.
+     */
+    template<typename Type>
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
+                && ::std::is_void<Type>::value
+    inline void moveConstructValue(Result &&result);
+
+    /**
+     * @brief       Move construct value(else).
+     *
+     * @tparam      Type    Value type.
+     *
+     * @param[in]   result  Result to move the value.
+     */
+    template<typename Type>
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
+                && (! ::std::is_void<Type>::value)
+    inline void moveConstructValue(Result &&result);
 
   private:
     // Construct.

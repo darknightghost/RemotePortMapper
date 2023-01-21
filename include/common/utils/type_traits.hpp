@@ -30,7 +30,7 @@ template<typename Type, typename... Types>
     requires ::std::is_void<Type>::value
 struct __BufferSizeImpl<Type, Types...> {
     static inline constexpr ::std::size_t value
-        = ::std::max(0, __BufferSizeImpl<Types...>::value);
+        = ::std::max(static_cast<size_t>(0), __BufferSizeImpl<Types...>::value);
 };
 
 /**

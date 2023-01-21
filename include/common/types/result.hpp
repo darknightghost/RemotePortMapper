@@ -266,11 +266,11 @@ inline void Result<OkType, ErrorType>::copy(const Result &result)
         m_status = result.m_status;
         switch (m_status) {
             case Status::Ok: {
-                this->construct<OkType>(result.value<OkType>());
+                this->copyConstructValue<OkType>(result);
 
             } break;
             case Status::Error: {
-                this->construct<ErrorType>(result.value<ErrorType>());
+                this->copyConstructValue<ErrorType>(result);
 
             } break;
             default:
@@ -345,6 +345,33 @@ template<typename Type>
 inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     this->destruct<Type>();
+    this->copyConstructValue<Type>(result);
+}
+
+/**
+ * @brief       Copy construct value(void).
+ */
+template<typename OkType, typename ErrorType>
+template<typename Type>
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
+            && ::std::is_void<Type>::value
+inline void Result<OkType, ErrorType>::copyConstructValue(const Result &)
+{
+    this->construct<Type>();
+}
+
+/**
+ * @brief       Copy construct value(else).
+ *
+ */
+template<typename OkType, typename ErrorType>
+template<typename Type>
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
+            && (! ::std::is_void<Type>::value)
+inline void Result<OkType, ErrorType>::copyConstructValue(const Result &result)
+{
     this->construct<Type>(result.value<Type>());
 }
 
@@ -376,12 +403,11 @@ inline void Result<OkType, ErrorType>::move(Result &&result)
         m_status = result.m_status;
         switch (m_status) {
             case Status::Ok: {
-                this->construct<OkType>(::std::move(result.value<OkType>()));
+                this->moveConstructValue<OkType>(::std::move(result));
 
             } break;
             case Status::Error: {
-                this->construct<ErrorType>(
-                    ::std::move(result.value<ErrorType>()));
+                this->moveConstructValue<ErrorType>(::std::move(result));
 
             } break;
             default:
@@ -452,6 +478,32 @@ template<typename Type>
 inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     this->destruct<Type>();
+    this->moveConstructValue<Type>(::std::move(result));
+}
+
+/**
+ * @brief       Move construct value(void).
+ */
+template<typename OkType, typename ErrorType>
+template<typename Type>
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
+            && ::std::is_void<Type>::value
+inline void Result<OkType, ErrorType>::moveConstructValue(Result &&)
+{
+    this->construct<Type>();
+}
+
+/**
+ * @brief       Move construct value(else).
+ */
+template<typename OkType, typename ErrorType>
+template<typename Type>
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
+            && (! ::std::is_void<Type>::value)
+inline void Result<OkType, ErrorType>::moveConstructValue(Result &&result)
+{
     this->construct<Type>(::std::move(result.value<Type>()));
 }
 
