@@ -7,15 +7,15 @@ namespace remotePortMapper {
 /**
  * @brief       Constructor.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType>::Result() : m_status(Status::Bad)
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType>::Result() : m_status(Status::Bad)
 {}
 
 /**
  * @brief       Copy constructor.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType>::Result(const Result &result) :
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType>::Result(const Result &result) :
     m_status(Status::Bad)
 {
     if (result.m_status != Status::Bad) {
@@ -26,57 +26,84 @@ inline Result<SuccessType, FailType>::Result(const Result &result) :
 /**
  * @brief       Move constructor.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType>::Result(Result &&result) :
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType>::Result(Result &&result) :
     m_status(Status::Bad)
 {
     if (result.m_status != Status::Bad) {
-        this->move(result);
+        this->move(::std::move(result));
     }
 }
 
 /**
  * @brief       Destructor.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType>::~Result()
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType>::~Result()
 {
     this->clear();
 }
 
 /**
+ * @brief       Make an ok result.
+ */
+template<typename OkType, typename ErrorType>
+template<typename... Args>
+Result<OkType, ErrorType> Result<OkType, ErrorType>::makeOk(Args &&...args)
+{
+    Result ret;
+    ret.m_status = Status::Ok;
+    ret.construct<OkType>(::std::forward<Args>(args)...);
+    return ret;
+}
+
+/**
+ * @brief       Make a error result.
+ */
+template<typename OkType, typename ErrorType>
+template<typename... Args>
+Result<OkType, ErrorType> Result<OkType, ErrorType>::makeError(Args &&...args)
+{
+    Result ret;
+    ret.m_status = Status::Error;
+    ret.construct<ErrorType>(::std::forward<Args>(args)...);
+    return ret;
+}
+
+/**
  * @brief       Check if the result is good.
  */
-template<typename SuccessType, typename FailType>
-inline bool Result<SuccessType, FailType>::good() const
+template<typename OkType, typename ErrorType>
+inline bool Result<OkType, ErrorType>::good() const
 {
     return m_status != Status::Bad;
 }
 
 /**
- * @brief       Check if the result is success.
+ * @brief       Check if the result is ok.
  */
-template<typename SuccessType, typename FailType>
-inline bool Result<SuccessType, FailType>::success() const
+template<typename OkType, typename ErrorType>
+inline bool Result<OkType, ErrorType>::ok() const
 {
-    return m_status == Status::Success;
+    return m_status == Status::Ok;
 }
 
 /**
  * @brief       Get value.
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
     requires(! ::std::is_reference<Type>::value)
             && (! ::std::is_void<Type>::value)
-inline typename Result<SuccessType, FailType>::template ValueReference<
-    Type> Result<SuccessType, FailType>::value()
+inline typename Result<OkType, ErrorType>::template ValueReference<
+    Type> Result<OkType, ErrorType>::value()
 {
     // Check type.
-    if (((! ::std::is_same<Type, SuccessType>::value)
-         && m_status == Status::Success)
-        || ((! ::std::is_same<Type, FailType>::value)
-            && m_status == Status::Fail)) {
+    if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
+        || ((! ::std::is_same<Type, ErrorType>::value)
+            && m_status == Status::Error)) {
+        ::abort();
+    } else if (m_status == Status::Bad) {
         ::abort();
     }
 
@@ -87,18 +114,19 @@ inline typename Result<SuccessType, FailType>::template ValueReference<
 /**
  * @brief       Get value.
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
     requires(::std::is_reference<Type>::value)
             && (! ::std::is_void<Type>::value)
-inline typename Result<SuccessType, FailType>::template ValueReference<
-    Type> Result<SuccessType, FailType>::value()
+inline typename Result<OkType, ErrorType>::template ValueReference<
+    Type> Result<OkType, ErrorType>::value()
 {
     // Check type.
-    if (((! ::std::is_same<Type, SuccessType>::value)
-         && m_status == Status::Success)
-        || ((! ::std::is_same<Type, FailType>::value)
-            && m_status == Status::Fail)) {
+    if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
+        || ((! ::std::is_same<Type, ErrorType>::value)
+            && m_status == Status::Error)) {
+        ::abort();
+    } else if (m_status == Status::Bad) {
         ::abort();
     }
 
@@ -110,18 +138,19 @@ inline typename Result<SuccessType, FailType>::template ValueReference<
 /**
  * @brief       Get value.
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
     requires(! ::std::is_reference<Type>::value)
             && (! ::std::is_void<Type>::value)
-inline typename Result<SuccessType, FailType>::template ConstValueReference<
-    Type> Result<SuccessType, FailType>::value() const
+inline typename Result<OkType, ErrorType>::template ConstValueReference<
+    Type> Result<OkType, ErrorType>::value() const
 {
     // Check type.
-    if (((! ::std::is_same<Type, SuccessType>::value)
-         && m_status == Status::Success)
-        || ((! ::std::is_same<Type, FailType>::value)
-            && m_status == Status::Fail)) {
+    if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
+        || ((! ::std::is_same<Type, ErrorType>::value)
+            && m_status == Status::Error)) {
+        ::abort();
+    } else if (m_status == Status::Bad) {
         ::abort();
     }
 
@@ -133,18 +162,19 @@ inline typename Result<SuccessType, FailType>::template ConstValueReference<
 /**
  * @brief       Get value.
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
     requires(::std::is_reference<Type>::value)
             && (! ::std::is_void<Type>::value)
-inline typename Result<SuccessType, FailType>::template ConstValueReference<
-    Type> Result<SuccessType, FailType>::value() const
+inline typename Result<OkType, ErrorType>::template ConstValueReference<
+    Type> Result<OkType, ErrorType>::value() const
 {
     // Check type.
-    if (((! ::std::is_same<Type, SuccessType>::value)
-         && m_status == Status::Success)
-        || ((! ::std::is_same<Type, FailType>::value)
-            && m_status == Status::Fail)) {
+    if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
+        || ((! ::std::is_same<Type, ErrorType>::value)
+            && m_status == Status::Error)) {
+        ::abort();
+    } else if (m_status == Status::Bad) {
         ::abort();
     }
 
@@ -157,17 +187,17 @@ inline typename Result<SuccessType, FailType>::template ConstValueReference<
 /**
  * @brief       Clear the value.
  */
-template<typename SuccessType, typename FailType>
-inline void Result<SuccessType, FailType>::clear()
+template<typename OkType, typename ErrorType>
+inline void Result<OkType, ErrorType>::clear()
 {
     switch (m_status) {
         case Status::Bad: {
         } break;
-        case Status::Success: {
-            this->destruct<SuccessType>();
+        case Status::Ok: {
+            this->destruct<OkType>();
         } break;
-        case Status::Fail: {
-            this->destruct<FailType>();
+        case Status::Error: {
+            this->destruct<ErrorType>();
         } break;
         default: {
             ::abort();
@@ -179,18 +209,18 @@ inline void Result<SuccessType, FailType>::clear()
 /**
  * @brief       Operator bool.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType>::operator bool() const
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType>::operator bool() const
 {
-    return this->success();
+    return this->ok();
 }
 
 /**
  * @brief       Operator=.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType> &
-    Result<SuccessType, FailType>::operator=(const Result &result)
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType> &
+    Result<OkType, ErrorType>::operator=(const Result &result)
 {
     this->copy(result);
 
@@ -200,11 +230,11 @@ inline Result<SuccessType, FailType> &
 /**
  * @brief       Operator=.
  */
-template<typename SuccessType, typename FailType>
-inline Result<SuccessType, FailType> &
-    Result<SuccessType, FailType>::operator=(Result &&result)
+template<typename OkType, typename ErrorType>
+inline Result<OkType, ErrorType> &
+    Result<OkType, ErrorType>::operator=(Result &&result)
 {
-    this->move(result);
+    this->move(::std::move(result));
 
     return *this;
 }
@@ -212,20 +242,20 @@ inline Result<SuccessType, FailType> &
 /**
  * @brief       Copy value.
  */
-template<typename SuccessType, typename FailType>
-inline void Result<SuccessType, FailType>::copy(const Result &result)
+template<typename OkType, typename ErrorType>
+inline void Result<OkType, ErrorType>::copy(const Result &result)
 {
     if (result.m_status == Status::Bad) {
         this->clear();
 
     } else if (m_status == result.m_status) {
         switch (m_status) {
-            case Status::Success: {
-                this->copyValue<SuccessType>(result);
+            case Status::Ok: {
+                this->copyValue<OkType>(result);
 
             } break;
-            case Status::FailType: {
-                this->copyValue<FailType>(result);
+            case Status::Error: {
+                this->copyValue<ErrorType>(result);
 
             } break;
             default:
@@ -235,12 +265,12 @@ inline void Result<SuccessType, FailType>::copy(const Result &result)
         this->clear();
         m_status = result.m_status;
         switch (m_status) {
-            case Status::Success: {
-                this->construct<SuccessType>(result.value<SuccessType>());
+            case Status::Ok: {
+                this->construct<OkType>(result.value<OkType>());
 
             } break;
-            case Status::FailType: {
-                this->construct<SuccessType>(result.value<FailType>());
+            case Status::Error: {
+                this->construct<ErrorType>(result.value<ErrorType>());
 
             } break;
             default:
@@ -252,24 +282,24 @@ inline void Result<SuccessType, FailType>::copy(const Result &result)
 /**
  * @brief       Copy value(void).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && ::std::is_void<Type>::value
-inline void Result<SuccessType, FailType>::copyValue(const Result &)
+inline void Result<OkType, ErrorType>::copyValue(const Result &)
 {}
 
 /**
  * @brief       Copy value(reference).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && ::std::is_reference<Type>::value
-inline void Result<SuccessType, FailType>::copyValue(const Result &result)
+inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     using TypePtrPtr = typename ::std::add_pointer<typename ::std::add_pointer<
         typename ::std::remove_reference<Type>::type>::type>::type;
@@ -286,14 +316,14 @@ inline void Result<SuccessType, FailType>::copyValue(const Result &result)
 /**
  * @brief       Copy value(copy assignable).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && ::std::is_copy_assignable<Type>::value
-inline void Result<SuccessType, FailType>::copyValue(const Result &result)
+inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     using TypePtr      = typename ::std::add_pointer<Type>::type;
     using ConstTypePtr = typename ::std::add_pointer<
@@ -305,14 +335,14 @@ inline void Result<SuccessType, FailType>::copyValue(const Result &result)
 /**
  * @brief       Copy value(else).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && (! ::std::is_copy_assignable<Type>::value)
-inline void Result<SuccessType, FailType>::copyValue(const Result &result)
+inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     this->destruct<Type>();
     this->construct<Type>(result.value<Type>());
@@ -321,20 +351,20 @@ inline void Result<SuccessType, FailType>::copyValue(const Result &result)
 /**
  * @brief       Move value.
  */
-template<typename SuccessType, typename FailType>
-inline void Result<SuccessType, FailType>::move(Result &&result)
+template<typename OkType, typename ErrorType>
+inline void Result<OkType, ErrorType>::move(Result &&result)
 {
     if (result.m_status == Status::Bad) {
         this->clear();
 
     } else if (m_status == result.m_status) {
         switch (m_status) {
-            case Status::Success: {
-                this->moveValue<SuccessType>(result);
+            case Status::Ok: {
+                this->moveValue<OkType>(::std::move(result));
 
             } break;
-            case Status::FailType: {
-                this->moveValue<FailType>(result);
+            case Status::Error: {
+                this->moveValue<ErrorType>(::std::move(result));
 
             } break;
             default:
@@ -345,14 +375,13 @@ inline void Result<SuccessType, FailType>::move(Result &&result)
         this->clear();
         m_status = result.m_status;
         switch (m_status) {
-            case Status::Success: {
-                this->construct<SuccessType>(
-                    ::std::move(result.value<SuccessType>()));
+            case Status::Ok: {
+                this->construct<OkType>(::std::move(result.value<OkType>()));
 
             } break;
-            case Status::FailType: {
-                this->construct<SuccessType>(
-                    ::std::move(result.value<FailType>()));
+            case Status::Error: {
+                this->construct<ErrorType>(
+                    ::std::move(result.value<ErrorType>()));
 
             } break;
             default:
@@ -365,24 +394,24 @@ inline void Result<SuccessType, FailType>::move(Result &&result)
 /**
  * @brief       Move value(void).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && ::std::is_void<Type>::value
-inline void Result<SuccessType, FailType>::moveValue(Result &&)
+inline void Result<OkType, ErrorType>::moveValue(Result &&)
 {}
 
 /**
  * @brief       Move value(reference).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && ::std::is_reference<Type>::value
-inline void Result<SuccessType, FailType>::moveValue(Result &&result)
+inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     using TypePtrPtr = typename ::std::add_pointer<typename ::std::add_pointer<
         typename ::std::remove_reference<Type>::type>::type>::type;
@@ -395,14 +424,14 @@ inline void Result<SuccessType, FailType>::moveValue(Result &&result)
 /**
  * @brief       Move value(move assignable).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && ::std::is_move_assignable<Type>::value
-inline void Result<SuccessType, FailType>::moveValue(Result &&result)
+inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     using TypePtr = typename ::std::add_pointer<Type>::type;
     *reinterpret_cast<TypePtr>(m_data)
@@ -412,15 +441,15 @@ inline void Result<SuccessType, FailType>::moveValue(Result &&result)
 /**
  * @brief       Move value(else).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && (! ::std::is_move_assignable<Type>::value)
             && (! ::std::is_copy_assignable<Type>::value)
-inline void Result<SuccessType, FailType>::moveValue(Result &&result)
+inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     this->destruct<Type>();
     this->construct<Type>(::std::move(result.value<Type>()));
@@ -429,24 +458,24 @@ inline void Result<SuccessType, FailType>::moveValue(Result &&result)
 /**
  * @brief       Construct the value(void).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && ::std::is_void<Type>::value
-inline void Result<SuccessType, FailType>::construct()
+inline void Result<OkType, ErrorType>::construct()
 {}
 
 /**
  * @brief       Construct the value(reference).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && ::std::is_reference<Type>::value
-inline void Result<SuccessType, FailType>::construct(Type ref)
+inline void Result<OkType, ErrorType>::construct(Type ref)
 {
     using TypePtr                     = typename ::std::add_pointer<Type>::type;
     reinterpret_cast<TypePtr>(m_data) = &ref;
@@ -455,14 +484,14 @@ inline void Result<SuccessType, FailType>::construct(Type ref)
 /**
  * @brief       Construct the value(others).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type, typename... Args>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && ::std::is_constructible<Type, Args &&...>::value
-inline void Result<SuccessType, FailType>::construct(Args &&...args)
+inline void Result<OkType, ErrorType>::construct(Args &&...args)
 {
     using TypePtr = typename ::std::add_pointer<Type>::type;
     new (reinterpret_cast<TypePtr>(m_data)) Type(::std::forward<Args>(args)...);
@@ -471,11 +500,11 @@ inline void Result<SuccessType, FailType>::construct(Args &&...args)
 /**
  * @brief       Desctuct the value.
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
-inline void Result<SuccessType, FailType>::destruct()
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
+inline void Result<OkType, ErrorType>::destruct()
 {
     this->destructAt<Type>(m_data);
 }
@@ -483,25 +512,25 @@ inline void Result<SuccessType, FailType>::destruct()
 /**
  * @brief       Desctuct the value at the position(void/reference).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (::std::is_void<Type>::value || ::std::is_reference<Type>::value)
-inline void Result<SuccessType, FailType>::destructAt(void *)
+inline void Result<OkType, ErrorType>::destructAt(void *)
 {}
 
 /**
  * @brief       Desctuct the value at the position(array).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && ::std::is_array<Type>::value
-inline void Result<SuccessType, FailType>::destructAt(void *ptr)
+inline void Result<OkType, ErrorType>::destructAt(void *ptr)
 {
     using ArrayPtr = typename ::std::add_pointer<Type>::type;
 
@@ -517,29 +546,29 @@ inline void Result<SuccessType, FailType>::destructAt(void *ptr)
 /**
  * @brief       Desctuct the value at the position(trival).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && (! ::std::is_array<Type>::value)
             && ::std::is_trivial<Type>::value
-inline void Result<SuccessType, FailType>::destructAt(void *)
+inline void Result<OkType, ErrorType>::destructAt(void *)
 {}
 
 /**
  * @brief       Desctuct the value at the position(non-trival).
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 template<typename Type>
-    requires(::std::is_same<Type, SuccessType>::value
-             || ::std::is_same<Type, FailType>::value)
+    requires(::std::is_same<Type, OkType>::value
+             || ::std::is_same<Type, ErrorType>::value)
             && (! ::std::is_void<Type>::value)
             && (! ::std::is_reference<Type>::value)
             && (! ::std::is_array<Type>::value)
             && (! ::std::is_trivial<Type>::value)
-inline void Result<SuccessType, FailType>::destructAt(void *ptr)
+inline void Result<OkType, ErrorType>::destructAt(void *ptr)
 {
     using TypePtr = typename ::std::add_pointer<Type>::type;
     reinterpret_cast<TypePtr>(ptr)->~Type();

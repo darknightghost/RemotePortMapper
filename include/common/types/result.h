@@ -13,16 +13,16 @@ namespace remotePortMapper {
 /**
  * @brief       Result type.
  *
- * @param[in]   SuccessType     Type of the value on success.
- * @param[in]   FailType      Type of the value on failed.
+ * @param[in]   OkType     Type of the value on ok.
+ * @param[in]   ErrorType      Type of the value on erred.
  */
-template<typename SuccessType, typename FailType>
+template<typename OkType, typename ErrorType>
 class Result {
   private:
     /**
      * @brief   Status.
      */
-    enum class Status : uint8_t { Bad, Success, Fail };
+    enum class Status : uint8_t { Bad, Ok, Error };
 
   public:
     /**
@@ -31,8 +31,8 @@ class Result {
      * @tparam  Type    Type.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                     && (! ::std::is_same<void, Type>::value)
     using ValueReference = typename ::std::conditional<
         ::std::is_reference<Type>::value,
@@ -45,8 +45,8 @@ class Result {
      * @tparam  Type    Type.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                     && (! ::std::is_same<void, Type>::value)
     using ConstValueReference = typename ::std::conditional<
         ::std::is_reference<Type>::value,
@@ -57,55 +57,61 @@ class Result {
   private:
     /// Size of the data.
     static inline constexpr ::std::size_t dataSize
-        = BufferSize<SuccessType, FailType>::value;
+        = BufferSize<OkType, ErrorType>::value;
 
     /// Alignment of the data.
     static inline constexpr ::std::size_t dataAlignment
-        = BufferAlignment<SuccessType, FailType>::value;
+        = BufferAlignment<OkType, ErrorType>::value;
 
   private:
     Status m_status;                                 ///< Status.
     alignas(dataAlignment) uint8_t m_data[dataSize]; ///< Data.
 
-  private:
-    /**
-     * @brief       Constructor.
-     *
-     * @tparam      Type        Value type.
-     * @tparam      Args        Types of the arguments of the constructor.
-     *
-     * @param[in]   status      Status.
-     * @param[in]   args        Arguments of the constructor.
-     */
-    template<typename Type, typename... Args>
-        requires ::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value
-    inline explicit Result(Status status, Args &&...args);
-
   public:
     /**
      * @brief       Constructor.
      */
-    inline explicit Result();
+    inline Result();
 
     /**
      * @brief       Copy constructor.
      *
      * @param[in]   result      Result to copy.
      */
-    inline explicit Result(const Result &result);
+    inline Result(const Result &result);
 
     /**
      * @brief       Move constructor.
      *
      * @param[in]   result      Result to move.
      */
-    inline explicit Result(Result &&result);
+    inline Result(Result &&result);
 
     /**
      * @brief       Destructor.
      */
     inline ~Result();
+
+  public:
+    /**
+     * @brief       Make a succeeeded result.
+     *
+     * @tparam      Args        Types of the arguments of the constructor.
+     *
+     * @param[in]   args        Arguments of the constructor of the value.
+     */
+    template<typename... Args>
+    static Result makeOk(Args &&...args);
+
+    /**
+     * @brief       Make a erred result.
+     *
+     * @tparam      Args        Types of the arguments of the constructor.
+     *
+     * @param[in]   args        Arguments of the constructor of the value.
+     */
+    template<typename... Args>
+    static Result makeError(Args &&...args);
 
   public:
     /**
@@ -116,11 +122,11 @@ class Result {
     inline bool good() const;
 
     /**
-     * @brief       Check if the result is success.
+     * @brief       Check if the result is ok.
      *
-     * @return      \c true if success, \c false if not.
+     * @return      \c true if ok, \c false if not.
      */
-    inline bool success() const;
+    inline bool ok() const;
 
     /**
      * @brief       Get value.
@@ -179,7 +185,7 @@ class Result {
     /**
      * @brief       Operator bool.
      *
-     * @return      \c true if success, \c false if not.
+     * @return      \c true if ok, \c false if not.
      */
     inline operator bool() const;
 
@@ -218,8 +224,8 @@ class Result {
      * @param[in]   result  Result to copy the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && ::std::is_void<Type>::value
     inline void copyValue(const Result &result);
 
@@ -231,8 +237,8 @@ class Result {
      * @param[in]   result  Result to copy the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && ::std::is_reference<Type>::value
     inline void copyValue(const Result &result);
@@ -245,8 +251,8 @@ class Result {
      * @param[in]   result  Result to copy the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && ::std::is_copy_assignable<Type>::value
@@ -260,8 +266,8 @@ class Result {
      * @param[in]   result  Result to copy the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_copy_assignable<Type>::value)
@@ -284,8 +290,8 @@ class Result {
      * @param[in]   result  Result to move the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && ::std::is_void<Type>::value
     inline void moveValue(Result &&result);
 
@@ -297,8 +303,8 @@ class Result {
      * @param[in]   result  Result to move the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && ::std::is_reference<Type>::value
     inline void moveValue(Result &&result);
@@ -311,8 +317,8 @@ class Result {
      * @param[in]   result  Result to move the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && ::std::is_move_assignable<Type>::value
@@ -326,8 +332,8 @@ class Result {
      * @param[in]   result  Result to move the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_move_assignable<Type>::value)
@@ -342,8 +348,8 @@ class Result {
      * @param[in]   result  Result to move the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_move_assignable<Type>::value)
@@ -358,8 +364,8 @@ class Result {
      * @tparam      Type    Value type.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && ::std::is_void<Type>::value
     inline void construct();
 
@@ -371,8 +377,8 @@ class Result {
      * @param[in]   ref     Reference to copy.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && ::std::is_reference<Type>::value
     inline void construct(Type ref);
@@ -386,8 +392,8 @@ class Result {
      * @param[in]   args    Arguments of the constructor.
      */
     template<typename Type, typename... Args>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && ::std::is_constructible<Type, Args &&...>::value
@@ -400,8 +406,8 @@ class Result {
      * @tparam      Type    Value type.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
     inline void destruct();
 
     /**
@@ -412,8 +418,8 @@ class Result {
      * @param[in]   ptr     Pointer to the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (::std::is_void<Type>::value
                     || ::std::is_reference<Type>::value)
     inline void destructAt(void *ptr);
@@ -426,8 +432,8 @@ class Result {
      * @param[in]   ptr     Pointer to the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && ::std::is_array<Type>::value
@@ -441,8 +447,8 @@ class Result {
      * @param[in]   ptr     Pointer to the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_array<Type>::value)
@@ -457,8 +463,8 @@ class Result {
      * @param[in]   ptr     Pointer to the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, SuccessType>::value
-                 || ::std::is_same<Type, FailType>::value)
+        requires(::std::is_same<Type, OkType>::value
+                 || ::std::is_same<Type, ErrorType>::value)
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_array<Type>::value)
@@ -467,3 +473,5 @@ class Result {
 };
 
 } // namespace remotePortMapper
+
+#include <common/types/result.hpp>
