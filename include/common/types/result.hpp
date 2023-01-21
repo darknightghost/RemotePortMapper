@@ -130,9 +130,10 @@ inline typename Result<OkType, ErrorType>::template ValueReference<
         ::abort();
     }
 
-    return **reinterpret_cast<typename ::std::add_pointer<
-        typename ::std::add_pointer<Type>::type>::type>(
-        reinterpret_cast<void *>(&m_data));
+    return static_cast<Type>(
+        **reinterpret_cast<typename ::std::add_pointer<
+             typename ::std::add_pointer<Type>::type>::type>(
+            reinterpret_cast<void *>(&m_data)));
 }
 
 /**
@@ -178,10 +179,11 @@ inline typename Result<OkType, ErrorType>::template ConstValueReference<
         ::abort();
     }
 
-    return **reinterpret_cast<
-        typename ::std::add_pointer<typename ::std::add_pointer<
-            typename ::std::add_const<Type>::type>::type>::type>(
-        reinterpret_cast<const void *>(&m_data));
+    return static_cast<typename ::std::add_const<Type>::type>(
+        **reinterpret_cast<
+            typename ::std::add_pointer<typename ::std::add_pointer<
+                typename ::std::add_const<Type>::type>::type>::type>(
+            reinterpret_cast<const void *>(&m_data)));
 }
 
 /**
@@ -309,8 +311,7 @@ inline void Result<OkType, ErrorType>::copyValue(const Result &result)
             typename ::std::remove_reference<Type>::type>::type>::type>::type;
 
     *reinterpret_cast<TypePtrPtr>(m_data)
-        = *reinterpret_cast<typename ::std::add_pointer<TypePtrConstPtr>::type>(
-            &(result.m_data));
+        = *reinterpret_cast<TypePtrConstPtr>(&(result.m_data));
 }
 
 /**
@@ -325,11 +326,13 @@ template<typename Type>
             && ::std::is_copy_assignable<Type>::value
 inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
-    using TypePtr      = typename ::std::add_pointer<Type>::type;
-    using ConstTypePtr = typename ::std::add_pointer<
-        typename ::std::add_const<Type>::type>::type;
-    *reinterpret_cast<TypePtr>(m_data)
-        = *reinterpret_cast<ConstTypePtr>(result.m_data);
+    using TypePtrPtr = typename ::std::add_pointer<
+        typename ::std::add_pointer<Type>::type>::type;
+    using ConstTypePtrPtr =
+        typename ::std::add_pointer<typename ::std::add_const<
+            typename ::std::add_pointer<Type>::type>::type>::type;
+    *reinterpret_cast<TypePtrPtr>(m_data)
+        = *reinterpret_cast<ConstTypePtrPtr>(result.m_data);
 }
 
 /**
@@ -443,8 +446,7 @@ inline void Result<OkType, ErrorType>::moveValue(Result &&result)
         typename ::std::remove_reference<Type>::type>::type>::type;
 
     *reinterpret_cast<TypePtrPtr>(m_data)
-        = *reinterpret_cast<typename ::std::add_pointer<TypePtrPtr>::type>(
-            &(result.m_data));
+        = *reinterpret_cast<TypePtrPtr>(result.m_data);
 }
 
 /**
@@ -504,7 +506,7 @@ template<typename Type>
             && (! ::std::is_void<Type>::value)
 inline void Result<OkType, ErrorType>::moveConstructValue(Result &&result)
 {
-    this->construct<Type>(::std::move(result.value<Type>()));
+    this->construct<Type>(static_cast<Type>(result.value<Type>()));
 }
 
 /**
@@ -529,8 +531,9 @@ template<typename Type>
             && ::std::is_reference<Type>::value
 inline void Result<OkType, ErrorType>::construct(Type ref)
 {
-    using TypePtr                     = typename ::std::add_pointer<Type>::type;
-    reinterpret_cast<TypePtr>(m_data) = &ref;
+    using TypePtrPtr = typename ::std::add_pointer<
+        typename ::std::add_pointer<Type>::type>::type;
+    *reinterpret_cast<TypePtrPtr>(m_data) = &ref;
 }
 
 /**
