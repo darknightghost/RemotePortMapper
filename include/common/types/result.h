@@ -170,6 +170,11 @@ class Result {
                 && (! ::std::is_void<Type>::value)
     inline ConstValueReference<Type> value() const;
 
+    /**
+     * @brief       Clear the value.
+     */
+    inline void clear();
+
   public:
     /**
      * @brief       Operator bool.
@@ -386,14 +391,9 @@ class Result {
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && ::std::is_constructible<Type, Args &&...>::value
-    inline void construct(Type ref, Args &&...args);
+    inline void construct(Args &&...args);
 
   private:
-    /**
-     * @brief       Clear the value.
-     */
-    inline void clear();
-
     /**
      * @brief       Desctuct the value.
      *
@@ -416,7 +416,7 @@ class Result {
                  || ::std::is_same<Type, FailType>::value)
                 && (::std::is_void<Type>::value
                     || ::std::is_reference<Type>::value)
-    inline void destructAt(typename ::std::add_pointer<Type> ptr);
+    inline void destructAt(void *ptr);
 
     /**
      * @brief       Desctuct the value at the position(array).
@@ -431,7 +431,7 @@ class Result {
                 && (! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && ::std::is_array<Type>::value
-    inline void destructAt(typename ::std::add_pointer<Type> ptr);
+    inline void destructAt(void *ptr);
 
     /**
      * @brief       Desctuct the value at the position(trival).
@@ -447,7 +447,7 @@ class Result {
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_array<Type>::value)
                 && ::std::is_trivial<Type>::value
-    inline void destructAt(typename ::std::add_pointer<Type> ptr);
+    inline void destructAt(void *ptr);
 
     /**
      * @brief       Desctuct the value at the position(non-trival).
@@ -463,7 +463,7 @@ class Result {
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_array<Type>::value)
                 && (! ::std::is_trivial<Type>::value)
-    inline void destructAt(typename ::std::add_pointer<Type> ptr);
+    inline void destructAt(void *ptr);
 };
 
 } // namespace remotePortMapper
