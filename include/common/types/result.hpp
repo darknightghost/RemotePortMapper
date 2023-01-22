@@ -8,6 +8,8 @@ namespace remotePortMapper {
  * @brief       Constructor.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline Result<OkType, ErrorType>::Result() : m_status(Status::Bad)
 {}
 
@@ -15,6 +17,8 @@ inline Result<OkType, ErrorType>::Result() : m_status(Status::Bad)
  * @brief       Copy constructor.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline Result<OkType, ErrorType>::Result(const Result &result) :
     m_status(Status::Bad)
 {
@@ -27,6 +31,8 @@ inline Result<OkType, ErrorType>::Result(const Result &result) :
  * @brief       Move constructor.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline Result<OkType, ErrorType>::Result(Result &&result) :
     m_status(Status::Bad)
 {
@@ -39,6 +45,8 @@ inline Result<OkType, ErrorType>::Result(Result &&result) :
  * @brief       Destructor.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline Result<OkType, ErrorType>::~Result()
 {
     this->clear();
@@ -48,6 +56,8 @@ inline Result<OkType, ErrorType>::~Result()
  * @brief       Make an ok result.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 template<typename... Args>
 Result<OkType, ErrorType> Result<OkType, ErrorType>::makeOk(Args &&...args)
 {
@@ -61,6 +71,8 @@ Result<OkType, ErrorType> Result<OkType, ErrorType>::makeOk(Args &&...args)
  * @brief       Make a error result.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 template<typename... Args>
 Result<OkType, ErrorType> Result<OkType, ErrorType>::makeError(Args &&...args)
 {
@@ -74,6 +86,8 @@ Result<OkType, ErrorType> Result<OkType, ErrorType>::makeError(Args &&...args)
  * @brief       Check if the result is good.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline bool Result<OkType, ErrorType>::good() const
 {
     return m_status != Status::Bad;
@@ -83,6 +97,8 @@ inline bool Result<OkType, ErrorType>::good() const
  * @brief       Check if the result is ok.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline bool Result<OkType, ErrorType>::ok() const
 {
     return m_status == Status::Ok;
@@ -92,9 +108,11 @@ inline bool Result<OkType, ErrorType>::ok() const
  * @brief       Get value.
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(! ::std::is_reference<Type>::value)
-            && (! ::std::is_void<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(! ::std::is_reference<Type>::value)
+                        && (! ::std::is_void<Type>::value)
 inline typename Result<OkType, ErrorType>::template ValueReference<
     Type> Result<OkType, ErrorType>::value()
 {
@@ -115,9 +133,11 @@ inline typename Result<OkType, ErrorType>::template ValueReference<
  * @brief       Get value.
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_reference<Type>::value)
-            && (! ::std::is_void<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_reference<Type>::value)
+                        && (! ::std::is_void<Type>::value)
 inline typename Result<OkType, ErrorType>::template ValueReference<
     Type> Result<OkType, ErrorType>::value()
 {
@@ -140,9 +160,11 @@ inline typename Result<OkType, ErrorType>::template ValueReference<
  * @brief       Get value.
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(! ::std::is_reference<Type>::value)
-            && (! ::std::is_void<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(! ::std::is_reference<Type>::value)
+                        && (! ::std::is_void<Type>::value)
 inline typename Result<OkType, ErrorType>::template ConstValueReference<
     Type> Result<OkType, ErrorType>::value() const
 {
@@ -164,9 +186,11 @@ inline typename Result<OkType, ErrorType>::template ConstValueReference<
  * @brief       Get value.
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_reference<Type>::value)
-            && (! ::std::is_void<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_reference<Type>::value)
+                        && (! ::std::is_void<Type>::value)
 inline typename Result<OkType, ErrorType>::template ConstValueReference<
     Type> Result<OkType, ErrorType>::value() const
 {
@@ -190,6 +214,8 @@ inline typename Result<OkType, ErrorType>::template ConstValueReference<
  * @brief       Clear the value.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline void Result<OkType, ErrorType>::clear()
 {
     switch (m_status) {
@@ -212,6 +238,8 @@ inline void Result<OkType, ErrorType>::clear()
  * @brief       Operator bool.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline Result<OkType, ErrorType>::operator bool() const
 {
     return this->ok();
@@ -221,8 +249,10 @@ inline Result<OkType, ErrorType>::operator bool() const
  * @brief       Operator=.
  */
 template<typename OkType, typename ErrorType>
-inline Result<OkType, ErrorType> &
-    Result<OkType, ErrorType>::operator=(const Result &result)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+inline Result<OkType, ErrorType> &Result<OkType, ErrorType>::operator=(
+    const Result &result)
 {
     this->copy(result);
 
@@ -233,8 +263,10 @@ inline Result<OkType, ErrorType> &
  * @brief       Operator=.
  */
 template<typename OkType, typename ErrorType>
-inline Result<OkType, ErrorType> &
-    Result<OkType, ErrorType>::operator=(Result &&result)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+inline Result<OkType, ErrorType> &Result<OkType, ErrorType>::operator=(
+    Result &&result)
 {
     this->move(::std::move(result));
 
@@ -245,6 +277,8 @@ inline Result<OkType, ErrorType> &
  * @brief       Copy value.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline void Result<OkType, ErrorType>::copy(const Result &result)
 {
     if (result.m_status == Status::Bad) {
@@ -285,10 +319,12 @@ inline void Result<OkType, ErrorType>::copy(const Result &result)
  * @brief       Copy value(void).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && ::std::is_void<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && ::std::is_void<Type>::value
 inline void Result<OkType, ErrorType>::copyValue(const Result &)
 {}
 
@@ -296,11 +332,13 @@ inline void Result<OkType, ErrorType>::copyValue(const Result &)
  * @brief       Copy value(reference).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && ::std::is_reference<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && ::std::is_reference<Type>::value
 inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     using TypePtrPtr = typename ::std::add_pointer<typename ::std::add_pointer<
@@ -318,12 +356,14 @@ inline void Result<OkType, ErrorType>::copyValue(const Result &result)
  * @brief       Copy value(copy assignable).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && ::std::is_copy_assignable<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && (! ::std::is_reference<Type>::value)
+                        && ::std::is_copy_assignable<Type>::value
 inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     using TypePtrPtr = typename ::std::add_pointer<
@@ -339,12 +379,14 @@ inline void Result<OkType, ErrorType>::copyValue(const Result &result)
  * @brief       Copy value(else).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && (! ::std::is_copy_assignable<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && (! ::std::is_reference<Type>::value)
+                        && (! ::std::is_copy_assignable<Type>::value)
 inline void Result<OkType, ErrorType>::copyValue(const Result &result)
 {
     this->destruct<Type>();
@@ -355,10 +397,12 @@ inline void Result<OkType, ErrorType>::copyValue(const Result &result)
  * @brief       Copy construct value(void).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && ::std::is_void<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && ::std::is_void<Type>::value
 inline void Result<OkType, ErrorType>::copyConstructValue(const Result &)
 {
     this->construct<Type>();
@@ -369,10 +413,12 @@ inline void Result<OkType, ErrorType>::copyConstructValue(const Result &)
  *
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
 inline void Result<OkType, ErrorType>::copyConstructValue(const Result &result)
 {
     this->construct<Type>(result.value<Type>());
@@ -382,6 +428,8 @@ inline void Result<OkType, ErrorType>::copyConstructValue(const Result &result)
  * @brief       Move value.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 inline void Result<OkType, ErrorType>::move(Result &&result)
 {
     if (result.m_status == Status::Bad) {
@@ -424,10 +472,12 @@ inline void Result<OkType, ErrorType>::move(Result &&result)
  * @brief       Move value(void).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && ::std::is_void<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && ::std::is_void<Type>::value
 inline void Result<OkType, ErrorType>::moveValue(Result &&)
 {}
 
@@ -435,11 +485,13 @@ inline void Result<OkType, ErrorType>::moveValue(Result &&)
  * @brief       Move value(reference).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && ::std::is_reference<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && ::std::is_reference<Type>::value
 inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     using TypePtrPtr = typename ::std::add_pointer<typename ::std::add_pointer<
@@ -453,12 +505,14 @@ inline void Result<OkType, ErrorType>::moveValue(Result &&result)
  * @brief       Move value(move assignable).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && ::std::is_move_assignable<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && (! ::std::is_reference<Type>::value)
+                        && ::std::is_move_assignable<Type>::value
 inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     using TypePtr = typename ::std::add_pointer<Type>::type;
@@ -470,13 +524,15 @@ inline void Result<OkType, ErrorType>::moveValue(Result &&result)
  * @brief       Move value(else).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && (! ::std::is_move_assignable<Type>::value)
-            && (! ::std::is_copy_assignable<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && (! ::std::is_reference<Type>::value)
+                        && (! ::std::is_move_assignable<Type>::value)
+                        && (! ::std::is_copy_assignable<Type>::value)
 inline void Result<OkType, ErrorType>::moveValue(Result &&result)
 {
     this->destruct<Type>();
@@ -487,10 +543,12 @@ inline void Result<OkType, ErrorType>::moveValue(Result &&result)
  * @brief       Move construct value(void).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && ::std::is_void<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && ::std::is_void<Type>::value
 inline void Result<OkType, ErrorType>::moveConstructValue(Result &&)
 {
     this->construct<Type>();
@@ -500,23 +558,27 @@ inline void Result<OkType, ErrorType>::moveConstructValue(Result &&)
  * @brief       Move construct value(else).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
 inline void Result<OkType, ErrorType>::moveConstructValue(Result &&result)
 {
-    this->construct<Type>(static_cast<Type>(result.value<Type>()));
+    this->construct<Type>(::std::forward<Type>(result.value<Type>()));
 }
 
 /**
  * @brief       Construct the value(void).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && ::std::is_void<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && ::std::is_void<Type>::value
 inline void Result<OkType, ErrorType>::construct()
 {}
 
@@ -524,11 +586,13 @@ inline void Result<OkType, ErrorType>::construct()
  * @brief       Construct the value(reference).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && ::std::is_reference<Type>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && ::std::is_reference<Type>::value
 inline void Result<OkType, ErrorType>::construct(Type ref)
 {
     using TypePtrPtr = typename ::std::add_pointer<
@@ -540,12 +604,14 @@ inline void Result<OkType, ErrorType>::construct(Type ref)
  * @brief       Construct the value(others).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type, typename... Args>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && ::std::is_constructible<Type, Args &&...>::value
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type, typename... Args>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
+                        && (! ::std::is_void<Type>::value)
+                        && (! ::std::is_reference<Type>::value)
+                        && ::std::is_constructible<Type, Args &&...>::value
 inline void Result<OkType, ErrorType>::construct(Args &&...args)
 {
     using TypePtr = typename ::std::add_pointer<Type>::type;
@@ -556,77 +622,47 @@ inline void Result<OkType, ErrorType>::construct(Args &&...args)
  * @brief       Desctuct the value.
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(::std::is_same<Type, OkType>::value
+                         || ::std::is_same<Type, ErrorType>::value)
 inline void Result<OkType, ErrorType>::destruct()
 {
-    this->destructAt<Type>(m_data);
-}
-
-/**
- * @brief       Desctuct the value at the position(void/reference).
- */
-template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (::std::is_void<Type>::value || ::std::is_reference<Type>::value)
-inline void Result<OkType, ErrorType>::destructAt(void *)
-{}
-
-/**
- * @brief       Desctuct the value at the position(array).
- */
-template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && ::std::is_array<Type>::value
-inline void Result<OkType, ErrorType>::destructAt(void *ptr)
-{
-    using ArrayPtr = typename ::std::add_pointer<Type>::type;
-
-    ArrayPtr arrayPtr = reinterpret_cast<ArrayPtr>(ptr);
-    for (size_t i = 0;
-         i < sizeof(Type) / sizeof(typename ::std::remove_extent<Type>::type);
-         ++i) {
-        this->destructAt<typename ::std::remove_extent<Type>::type>(
-            &((*arrayPtr)[i]));
-    }
+    this->destructAt<Type>(
+        reinterpret_cast<typename ::std::add_pointer<Type>::type>(m_data));
 }
 
 /**
  * @brief       Desctuct the value at the position(trival).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && (! ::std::is_array<Type>::value)
-            && ::std::is_trivial<Type>::value
-inline void Result<OkType, ErrorType>::destructAt(void *)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires ::std::is_void<Type>::value
+                         || ::std::is_reference<Type>::value
+                         || ((! ::std::is_array<Type>::value)
+                             && ::std::is_trivial<Type>::value)
+inline void Result<OkType, ErrorType>::destructAt(
+    typename ::std::add_pointer<Type>::type)
 {}
 
 /**
  * @brief       Desctuct the value at the position(non-trival).
  */
 template<typename OkType, typename ErrorType>
-template<typename Type>
-    requires(::std::is_same<Type, OkType>::value
-             || ::std::is_same<Type, ErrorType>::value)
-            && (! ::std::is_void<Type>::value)
-            && (! ::std::is_reference<Type>::value)
-            && (! ::std::is_array<Type>::value)
-            && (! ::std::is_trivial<Type>::value)
-inline void Result<OkType, ErrorType>::destructAt(void *ptr)
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
+            template<typename Type>
+                requires(! ::std::is_void<Type>::value)
+                        && (! ::std::is_reference<Type>::value)
+                        && (! ::std::is_array<Type>::value)
+                        && (! ::std::is_trivial<Type>::value)
+inline void Result<OkType, ErrorType>::destructAt(
+    typename ::std::add_pointer<Type>::type ptr)
 {
-    using TypePtr = typename ::std::add_pointer<Type>::type;
-    reinterpret_cast<TypePtr>(ptr)->~Type();
+    ptr->~Type();
 }
 
 } // namespace remotePortMapper

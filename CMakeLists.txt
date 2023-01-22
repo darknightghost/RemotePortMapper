@@ -93,6 +93,10 @@ target_link_libraries (
 
 # Tests
 add_test_case (
+    NAME            "alignment"
+    LINK_LIBRARIES  "RemotePortMapperCommon"
+)
+add_test_case (
     NAME            "result"
     LINK_LIBRARIES  "RemotePortMapperCommon"
 )

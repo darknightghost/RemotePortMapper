@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <gtest/gtest.h>
-
 #include <common/types/result.h>
 
 TEST(Result, reference)

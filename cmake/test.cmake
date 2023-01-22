@@ -38,9 +38,12 @@ if (BUILD_TEST)
         add_executable ("${target_name}"
             ${sources}
         )
+        set_target_properties ("${target_name}"
+            PROPERTIES  "RUNTIME_OUTPUT_DIRECTORY"  "${TEST_OUTPUT_DIRECTORY}"
+        )
         target_include_directories ("${target_name}"    PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/include"
-            "${CMAKE_CURRENT_SOURCE_DIR}/test/include/common"
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/include"
             "${GTEST_INCLUDE_DIRS}"
         )
         target_link_libraries ("${target_name}"

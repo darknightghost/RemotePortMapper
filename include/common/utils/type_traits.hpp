@@ -83,9 +83,9 @@ constexpr inline ::std::size_t __calculateAlignemnt(::std::size_t alignment1,
                                                     ::std::size_t alignment2)
 {
     // Ignore 0.
-    if (alignment1 == 0) {
+    if (alignment1 == 1) {
         return alignment2;
-    } else if (alignment2 == 0) {
+    } else if (alignment2 == 1) {
         return alignment1;
     } else if (alignment1 == alignment2) {
         return alignment1;
@@ -119,7 +119,7 @@ template<typename Type, typename... Types>
     requires ::std::is_void<Type>::value
 struct __BufferAlignmentImpl<Type, Types...> {
     static inline constexpr ::std::size_t value
-        = __calculateAlignemnt(0, __BufferAlignmentImpl<Types...>::value);
+        = __calculateAlignemnt(1, __BufferAlignmentImpl<Types...>::value);
 };
 
 /**
@@ -150,7 +150,7 @@ struct __BufferAlignmentImpl<Type, Types...> {
  */
 template<>
 struct __BufferAlignmentImpl<> {
-    static inline constexpr ::std::size_t value = 0;
+    static inline constexpr ::std::size_t value = 1;
 };
 
 /**
@@ -160,7 +160,7 @@ template<typename... Types>
 struct BufferAlignment {
     /// Value.
     static inline constexpr ::std::size_t value
-        = __BufferSizeImpl<Types...>::value;
+        = __BufferAlignmentImpl<Types...>::value;
 };
 
 } // namespace remotePortMapper

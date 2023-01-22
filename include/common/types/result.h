@@ -17,6 +17,8 @@ namespace remotePortMapper {
  * @param[in]   ErrorType      Type of the value on erred.
  */
 template<typename OkType, typename ErrorType>
+    requires(! ::std::is_array<OkType>::value)
+            && (! ::std::is_array<ErrorType>::value)
 class Result {
   private:
     /**
@@ -94,21 +96,25 @@ class Result {
 
   public:
     /**
-     * @brief       Make a succeeeded result.
+     * @brief       Make an ok result.
      *
      * @tparam      Args        Types of the arguments of the constructor.
      *
      * @param[in]   args        Arguments of the constructor of the value.
+     *
+     * @return      Result.
      */
     template<typename... Args>
     static Result makeOk(Args &&...args);
 
     /**
-     * @brief       Make a erred result.
+     * @brief       Make a error result.
      *
      * @tparam      Args        Types of the arguments of the constructor.
      *
      * @param[in]   args        Arguments of the constructor of the value.
+     *
+     * @return      Result.
      */
     template<typename... Args>
     static Result makeError(Args &&...args);
@@ -463,35 +469,6 @@ class Result {
     inline void destruct();
 
     /**
-     * @brief       Desctuct the value at the position(void/reference).
-     *
-     * @tparam      Type    Value type.
-     *
-     * @param[in]   ptr     Pointer to the value.
-     */
-    template<typename Type>
-        requires(::std::is_same<Type, OkType>::value
-                 || ::std::is_same<Type, ErrorType>::value)
-                && (::std::is_void<Type>::value
-                    || ::std::is_reference<Type>::value)
-    inline void destructAt(void *ptr);
-
-    /**
-     * @brief       Desctuct the value at the position(array).
-     *
-     * @tparam      Type    Value type.
-     *
-     * @param[in]   ptr     Pointer to the value.
-     */
-    template<typename Type>
-        requires(::std::is_same<Type, OkType>::value
-                 || ::std::is_same<Type, ErrorType>::value)
-                && (! ::std::is_void<Type>::value)
-                && (! ::std::is_reference<Type>::value)
-                && ::std::is_array<Type>::value
-    inline void destructAt(void *ptr);
-
-    /**
      * @brief       Desctuct the value at the position(trival).
      *
      * @tparam      Type    Value type.
@@ -499,13 +476,10 @@ class Result {
      * @param[in]   ptr     Pointer to the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, OkType>::value
-                 || ::std::is_same<Type, ErrorType>::value)
-                && (! ::std::is_void<Type>::value)
-                && (! ::std::is_reference<Type>::value)
-                && (! ::std::is_array<Type>::value)
-                && ::std::is_trivial<Type>::value
-    inline void destructAt(void *ptr);
+        requires ::std::is_void<Type>::value || ::std::is_reference<Type>::value
+                 || ((! ::std::is_array<Type>::value)
+                     && ::std::is_trivial<Type>::value)
+    inline void destructAt(typename ::std::add_pointer<Type>::type ptr);
 
     /**
      * @brief       Desctuct the value at the position(non-trival).
@@ -515,13 +489,11 @@ class Result {
      * @param[in]   ptr     Pointer to the value.
      */
     template<typename Type>
-        requires(::std::is_same<Type, OkType>::value
-                 || ::std::is_same<Type, ErrorType>::value)
-                && (! ::std::is_void<Type>::value)
+        requires(! ::std::is_void<Type>::value)
                 && (! ::std::is_reference<Type>::value)
                 && (! ::std::is_array<Type>::value)
                 && (! ::std::is_trivial<Type>::value)
-    inline void destructAt(void *ptr);
+    inline void destructAt(typename ::std::add_pointer<Type>::type ptr);
 };
 
 } // namespace remotePortMapper
