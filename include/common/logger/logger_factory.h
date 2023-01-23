@@ -11,6 +11,9 @@
 
 namespace remotePortMapper {
 
+template<class Type>
+class ISingleton;
+
 /**
  * @brief   Factory class of logger.
  */

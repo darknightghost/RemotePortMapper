@@ -1,4 +1,8 @@
+#pragma once
+
 #include <cstdlib>
+
+#include <common/logger/logger.h>
 
 #include <common/types/result.h>
 
@@ -120,9 +124,9 @@ inline typename Result<OkType, ErrorType>::template ValueReference<
     if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
         || ((! ::std::is_same<Type, ErrorType>::value)
             && m_status == Status::Error)) {
-        ::abort();
+        panic("Data type mismatched!");
     } else if (m_status == Status::Bad) {
-        ::abort();
+        panic("Trying to get the value from a bad result!");
     }
 
     return *reinterpret_cast<typename ::std::add_pointer<Type>::type>(
@@ -130,7 +134,7 @@ inline typename Result<OkType, ErrorType>::template ValueReference<
 }
 
 /**
- * @brief       Get value.
+ * @brief       Get value(reference).
  */
 template<typename OkType, typename ErrorType>
     requires(! ::std::is_array<OkType>::value)
@@ -145,9 +149,9 @@ inline typename Result<OkType, ErrorType>::template ValueReference<
     if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
         || ((! ::std::is_same<Type, ErrorType>::value)
             && m_status == Status::Error)) {
-        ::abort();
+        panic("Data type mismatched!");
     } else if (m_status == Status::Bad) {
-        ::abort();
+        panic("Trying to get the value from a bad result!");
     }
 
     return static_cast<Type>(
@@ -172,18 +176,18 @@ inline typename Result<OkType, ErrorType>::template ConstValueReference<
     if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
         || ((! ::std::is_same<Type, ErrorType>::value)
             && m_status == Status::Error)) {
-        ::abort();
+        panic("Data type mismatched!");
     } else if (m_status == Status::Bad) {
-        ::abort();
+        panic("Trying to get the value from a bad result!");
     }
 
     return *reinterpret_cast<typename ::std::add_pointer<
         typename ::std::add_const<Type>::type>::type>(
-        reinterpret_cast<const void *>(&m_data));
+        reinterpret_cast<const void *>(m_data));
 }
 
 /**
- * @brief       Get value.
+ * @brief       Get value(reference).
  */
 template<typename OkType, typename ErrorType>
     requires(! ::std::is_array<OkType>::value)
@@ -198,16 +202,15 @@ inline typename Result<OkType, ErrorType>::template ConstValueReference<
     if (((! ::std::is_same<Type, OkType>::value) && m_status == Status::Ok)
         || ((! ::std::is_same<Type, ErrorType>::value)
             && m_status == Status::Error)) {
-        ::abort();
+        panic("Data type mismatched!");
     } else if (m_status == Status::Bad) {
-        ::abort();
+        panic("Trying to get the value from a bad result!");
     }
 
-    return static_cast<typename ::std::add_const<Type>::type>(
-        **reinterpret_cast<
-            typename ::std::add_pointer<typename ::std::add_pointer<
-                typename ::std::add_const<Type>::type>::type>::type>(
-            reinterpret_cast<const void *>(&m_data)));
+    return **reinterpret_cast<
+        typename ::std::add_pointer<typename ::std::add_pointer<
+            typename ::std::add_const<Type>::type>::type>::type>(
+        reinterpret_cast<const void *>(m_data));
 }
 
 /**
@@ -228,7 +231,7 @@ inline void Result<OkType, ErrorType>::clear()
             this->destruct<ErrorType>();
         } break;
         default: {
-            ::abort();
+            panic("Illegal result status!");
         }
     }
     m_status = Status::Bad;
@@ -295,7 +298,7 @@ inline void Result<OkType, ErrorType>::copy(const Result &result)
 
             } break;
             default:
-                ::abort();
+                panic("Illegal result status!");
         }
     } else {
         this->clear();
@@ -310,7 +313,7 @@ inline void Result<OkType, ErrorType>::copy(const Result &result)
 
             } break;
             default:
-                ::abort();
+                panic("Illegal result status!");
         }
     }
 }
@@ -446,7 +449,7 @@ inline void Result<OkType, ErrorType>::move(Result &&result)
 
             } break;
             default:
-                ::abort();
+                panic("Illegal result status!");
         }
         result.clear();
     } else {
@@ -462,7 +465,7 @@ inline void Result<OkType, ErrorType>::move(Result &&result)
 
             } break;
             default:
-                ::abort();
+                panic("Illegal result status!");
         }
         result.clear();
     }

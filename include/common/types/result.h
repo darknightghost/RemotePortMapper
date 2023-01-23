@@ -53,8 +53,8 @@ class Result {
     using ConstValueReference = typename ::std::conditional<
         ::std::is_reference<Type>::value,
         typename ::std::add_const<Type>::type,
-        typename ::std::add_const<
-            typename ::std::add_lvalue_reference<Type>::type>::type>::type;
+        typename ::std::add_lvalue_reference<
+            typename ::std::add_const<Type>::type>::type>::type;
 
   private:
     /// Size of the data.
@@ -147,7 +147,7 @@ class Result {
     inline ValueReference<Type> value();
 
     /**
-     * @brief       Get value.
+     * @brief       Get value(reference).
      *
      * @tparam      Type    Value type.
      *
@@ -171,7 +171,7 @@ class Result {
     inline ConstValueReference<Type> value() const;
 
     /**
-     * @brief       Get value.
+     * @brief       Get value(reference).
      *
      * @tparam      Type    Value type.
      *

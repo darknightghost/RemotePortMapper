@@ -16,18 +16,18 @@ namespace remotePortMapper {
  */
 template<class Type, typename... Args>
     requires ::std::is_constructible<Type, Args...>::value
-class ICreateSharedFunc : virtual public IInitializeResult {
+class ICreateUniqueFunc : virtual public IInitializeResult {
   protected:
     /**
      * @brief       Constructor.
      */
-    ICreateSharedFunc() = default;
+    ICreateUniqueFunc() = default;
 
   public:
     /**
      * #brief   Destructor.
      */
-    virtual ~ICreateSharedFunc() = default;
+    virtual ~ICreateUniqueFunc() = default;
 
   public:
     /**
@@ -37,12 +37,13 @@ class ICreateSharedFunc : virtual public IInitializeResult {
      *
      * @return      Object created or error infomation.
      */
-    static Result<::std::shared_ptr<Type>, Error> initialize(Args &&...args)
+    static Result<::std::unique_ptr<Type>, Error> initialize(Args &&...args)
     {
-        ::std::shared_ptr<Type> ret(new Type(::std::forward<Args>(args)...));
+        ::std::unique_ptr<Type> ret(new Type(::std::forward<Args>(args)...));
         auto                    result = ret->takeInitializeResult();
         if (result) {
-            return Result<::std::shared_ptr<Type>, Error>::makeOk(ret);
+            return Result<::std::shared_ptr<Type>, Error>::makeOk(
+                ::std::move(ret));
         } else {
             return Result<::std::shared_ptr<Type>, Error>::makeError(
                 ::std::move(result.template value<Error>()));
@@ -50,7 +51,7 @@ class ICreateSharedFunc : virtual public IInitializeResult {
     }
 };
 
-#define CREATE_SHARED(Type, ...) \
-    friend class remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>;
+#define CREATE_UNIQUE(Type, ...) \
+    friend class remotePortMapper::ICreateUniqueFunc<Type, ##__VA_ARGS__>;
 
 } // namespace remotePortMapper

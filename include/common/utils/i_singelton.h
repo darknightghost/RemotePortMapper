@@ -4,7 +4,9 @@
 #include <mutex>
 #include <utility>
 
-#include <common/utils/i_initialized.h>
+#include <common/logger/logger.h>
+
+#include <common/utils/i_initialize_result.h>
 
 namespace remotePortMapper {
 
@@ -14,7 +16,7 @@ namespace remotePortMapper {
  * @tparam  Type    Class type.
  */
 template<class Type>
-class ISingleton : virtual public IInitialized {
+class ISingleton : virtual public IInitializeResult {
   private:
     static ::std::shared_ptr<Type> _instance;     ///< Instance.
     static ::std::mutex            _instanceLock; ///< Instance lock.
@@ -46,17 +48,32 @@ class ISingleton : virtual public IInitialized {
      *              the existing instance.
      */
     template<typename... Args>
-    static ::std::shared_ptr<Type> initialize(Args &&...args)
+    static Result<::std::shared_ptr<Type>, Error> initialize(Args &&...args)
     {
         ::std::unique_lock<::std::mutex> lock(_instanceLock);
         if (_instance == nullptr) {
             auto newInstance = ::std::shared_ptr<Type>(
                 new Type(::std::forward<Args>(args)...));
-            if (newInstance->initialized()) {
+            auto result = newInstance->takeInitializeResul();
+            if (result) {
                 _instance = newInstance;
+            } else {
+                return Result<::std::shared_ptr<Type>, Error>::makeError(
+                    ::std::move(result.template value<Error>()));
             }
         }
-        return _instance;
+        return Result<::std::shared_ptr<Type>, Error>::makeOk(_instance);
+    }
+
+    /**
+     * @brief       Check if the instance is initialized.
+     *
+     * @return      Result.
+     */
+    static bool instanceInitialized()
+    {
+        ::std::unique_lock<::std::mutex> lock(_instanceLock);
+        return _instance != nullptr;
     }
 
     /**
@@ -66,8 +83,15 @@ class ISingleton : virtual public IInitialized {
      */
     static ::std::shared_ptr<Type> instance()
     {
-        ::std::unique_lock<::std::mutex> lock(_instanceLock);
-        return _instance;
+        ::std::shared_ptr<Type> ret;
+        {
+            ::std::unique_lock<::std::mutex> lock(_instanceLock);
+            ret = _instance;
+        }
+        if (ret == nullptr) {
+            panic("Try to get instance before initialized.");
+        }
+        return ret;
     }
 };
 

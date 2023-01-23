@@ -4,6 +4,8 @@
 #include <source_location>
 #include <string_view>
 
+#include <common/logger/panic.h>
+
 namespace remotePortMapper {
 
 /**
