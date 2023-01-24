@@ -36,20 +36,17 @@ class ICreateSharedFunc : virtual public IInitializeResult {
      *
      * @return      Object created or error infomation.
      */
-    static Result<::std::shared_ptr<Type>, Error> create(Args... args)
-    {
-        ::std::shared_ptr<Type> ret(new Type(::std::forward<Args>(args)...));
-        auto                    result = ret->takeInitializeResult();
-        if (result) {
-            return Result<::std::shared_ptr<Type>, Error>::makeOk(ret);
-        } else {
-            return Result<::std::shared_ptr<Type>, Error>::makeError(
-                ::std::move(result.template value<Error>()));
-        }
-    }
+    static inline Result<::std::shared_ptr<Type>, Error> create(Args... args);
 };
 
-#define CREATE_SHARED(Type, ...) \
-    friend class ::remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>;
+#define CREATE_SHARED(Type, ...)                                              \
+    friend class ::remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>;  \
+                                                                              \
+  public:                                                                     \
+    using ::remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>::create; \
+                                                                              \
+  private:
 
 } // namespace remotePortMapper
+
+#include <common/utils/i_create_shared_function.hpp>

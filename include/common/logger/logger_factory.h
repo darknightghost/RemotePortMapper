@@ -3,35 +3,18 @@
 #include <functional>
 #include <memory>
 
-#include <common/utils/i_singelton.h>
-
 #include <common/logger/logger.h>
 
 #include <common/logger/default_logger.h>
 
 namespace remotePortMapper {
 
-template<class Type>
-class ISingleton;
-
 /**
  * @brief   Factory class of logger.
  */
-class LoggerFactory : public ISingleton<LoggerFactory> {
-    SINGLETON_OBJECT(LoggerFactory);
-
+class LoggerFactory {
   private:
-    ::std::function<Logger &()>
-        m_createLoggerCallback; ///< Callback to create logger.
-
-  private:
-    /**
-     * @brief       Constructor.
-     *
-     * @param[in]   createLoggerCallback    Callback to create logger.
-     */
-    LoggerFactory(::std::function<Logger &()> createLoggerCallback);
-
+    LoggerFactory()                      = delete;
     LoggerFactory(const LoggerFactory &) = delete;
     LoggerFactory(LoggerFactory &&)      = delete;
 
@@ -39,15 +22,30 @@ class LoggerFactory : public ISingleton<LoggerFactory> {
     /**
      * @brief       Destructor.
      */
-    ~LoggerFactory() = default;
+    ~LoggerFactory() = delete;
 
   public:
+    /**
+     * @brief       Set factory function of logger.
+     *
+     * @param[in]   factoryFunc     Factory function to create logger.
+     */
+    static void setFactoryFunc(::std::function<Logger &()> factoryFunc);
+
     /**
      * @brief       Get logger.
      *
      * @return      Logger.
      */
     static Logger &logger();
+
+  private:
+    /**
+     * @brief       Get logger callback.
+     *
+     * @return      callback.
+     */
+    static ::std::function<Logger &()> &callback();
 };
 
 } // namespace remotePortMapper

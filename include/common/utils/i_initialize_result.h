@@ -18,7 +18,7 @@ class IInitializeResult {
     /**
      * @brief       Constructor.
      */
-    IInitializeResult() {}
+    inline IInitializeResult();
 
   public:
     /**
@@ -32,29 +32,22 @@ class IInitializeResult {
      *
      * @return      Initialize result.
      */
-    const Result<void, Error> &takeInitializeResult() const
-    {
-        return m_initializeResult;
-    }
+    const inline Result<void, Error> &takeInitializeResult() const;
 
     /**
      * @brief       Take result.
      *
      * @return      Initialize result.
      */
-    Result<void, Error> &&takeInitializeResult()
-    {
-        return ::std::move(m_initializeResult);
-    }
+    inline Result<void, Error> &&takeInitializeResult();
 
   protected:
     /**
      * @brief       Set current object initialized.
      */
-    void setInitializeResult(Result<void, Error> &&result)
-    {
-        m_initializeResult = result;
-    }
+    void inline setInitializeResult(Result<void, Error> &&result);
 };
 
 } // namespace remotePortMapper
+
+#include <common/utils/i_initialize_result.hpp>

@@ -48,59 +48,26 @@ class ISingleton : virtual public IInitializeResult {
      *              the existing instance.
      */
     template<typename... Args>
-    static Result<::std::shared_ptr<Type>, Error> initialize(Args &&...args)
-    {
-        ::std::unique_lock<::std::mutex> lock(_instanceLock);
-        if (_instance == nullptr) {
-            auto newInstance = ::std::shared_ptr<Type>(
-                new Type(::std::forward<Args>(args)...));
-            auto result = newInstance->takeInitializeResul();
-            if (result) {
-                _instance = newInstance;
-            } else {
-                return Result<::std::shared_ptr<Type>, Error>::makeError(
-                    ::std::move(result.template value<Error>()));
-            }
-        }
-        return Result<::std::shared_ptr<Type>, Error>::makeOk(_instance);
-    }
+    static inline Result<::std::shared_ptr<Type>, Error>
+        initialize(Args &&...args);
 
     /**
      * @brief       Check if the instance is initialized.
      *
      * @return      Result.
      */
-    static bool instanceInitialized()
-    {
-        ::std::unique_lock<::std::mutex> lock(_instanceLock);
-        return _instance != nullptr;
-    }
+    static inline bool instanceInitialized();
 
     /**
      * @brief       Get instance.
      *
      * @return      Instance.
      */
-    static ::std::shared_ptr<Type> instance()
-    {
-        ::std::shared_ptr<Type> ret;
-        {
-            ::std::unique_lock<::std::mutex> lock(_instanceLock);
-            ret = _instance;
-        }
-        if (ret == nullptr) {
-            panic("Try to get instance before initialized.");
-        }
-        return ret;
-    }
+    static inline ::std::shared_ptr<Type> instance();
 };
-
-template<class Type>
-::std::shared_ptr<Type> ISingleton<Type>::_instance;
-
-template<class Type>
-::std::mutex ISingleton<Type>::_instanceLock;
 
 #define SINGLETON_OBJECT(Type) friend class remotePortMapper::ISingleton<Type>;
 
 } // namespace remotePortMapper
+
+#include <common/utils/i_singelton.hpp>

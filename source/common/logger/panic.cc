@@ -23,6 +23,8 @@ void __doPanic(::std::chrono::system_clock::time_point timestamp,
         messageSs << "PANIC : " << message;
         logger.log(logLevel, timestamp, location, messageSs.str());
     }
+
+    ::abort();
 }
 
 } // namespace remotePortMapper

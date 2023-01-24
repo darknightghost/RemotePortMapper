@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <common/logger/logger.h>
 
 #include <common/thread_pool/thread_pool.h>
@@ -9,6 +11,7 @@ namespace remotePortMapper {
  */
 ThreadPool::ThreadPool(::std::size_t workers) : m_running(true)
 {
+    workers = ::std::max(workers, static_cast<::std::size_t>(1));
     for (::std::size_t i = 0; i < workers; ++i) {
         m_workers.push_back(::std::thread(&ThreadPool::workerThread, this));
     }
@@ -16,7 +19,7 @@ ThreadPool::ThreadPool(::std::size_t workers) : m_running(true)
     m_alarmThread = ::std::thread(&ThreadPool::alarmThread, this);
 
     this->setInitializeResult(Result<void, Error>::makeOk());
-    log_info("ThreadPool at " << this << " initialized.");
+    log_info("\"ThreadPool\" at " << this << " initialized.");
 }
 
 /**
@@ -24,7 +27,7 @@ ThreadPool::ThreadPool(::std::size_t workers) : m_running(true)
  */
 ThreadPool::~ThreadPool()
 {
-    log_info("ThreadPool at " << this << " destroying.");
+    log_info("Destroying \"ThreadPool\" at " << this << ".");
     // Change status.
     m_running = false;
     ::std::atomic_thread_fence(::std::memory_order_seq_cst);
@@ -39,7 +42,7 @@ ThreadPool::~ThreadPool()
         worker.join();
     }
 
-    log_info("ThreadPool at " << this << " destroyed.");
+    log_info("\"ThreadPool\" at " << this << " destroyed.");
 }
 
 /**
@@ -172,7 +175,9 @@ ThreadPool::AsyncAlarm::AsyncAlarm(
     ::std::weak_ptr<ThreadPool>             threadPool) :
     m_timepoint(timepoint),
     m_task(::std::move(task)), m_status(Status::Ready), m_threadPool(threadPool)
-{}
+{
+    this->setInitializeResult(Result<void, Error>::makeOk());
+}
 
 /**
  * @brief   Get timepoint to alarm.
@@ -219,6 +224,11 @@ void ThreadPool::AsyncAlarm::alarm()
 
     if (exchanged) {
         m_task();
+    } else {
+        if (m_status == Status::Alarmed) {
+            panic("AsyncAlarm object at " << this
+                                          << " has been tried to alarm twice.");
+        }
     }
 }
 

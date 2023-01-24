@@ -100,3 +100,7 @@ add_test_case (
     NAME            "result"
     LINK_LIBRARIES  "RemotePortMapperCommon"
 )
+add_test_case (
+    NAME            "thread_pool"
+    LINK_LIBRARIES  "RemotePortMapperCommon"
+)

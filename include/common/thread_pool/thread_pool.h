@@ -17,7 +17,7 @@ namespace remotePortMapper {
  * @brief   Thread pool.
  */
 class ThreadPool :
-    ::std::enable_shared_from_this<ThreadPool>,
+    public ::std::enable_shared_from_this<ThreadPool>,
     virtual public ICreateSharedFunc<ThreadPool>,
     virtual public ICreateSharedFunc<ThreadPool, ::std::size_t> {
     CREATE_SHARED(ThreadPool);
@@ -118,7 +118,7 @@ class ThreadPool :
  * @brief       Asynchronous alarm object.
  */
 class ThreadPool::AsyncAlarm :
-    ::std::enable_shared_from_this<AsyncAlarm>,
+    public ::std::enable_shared_from_this<AsyncAlarm>,
     virtual public ICreateSharedFunc<AsyncAlarm,
                                      ::std::chrono::steady_clock::time_point,
                                      Task,

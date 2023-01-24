@@ -3,26 +3,35 @@
 namespace remotePortMapper {
 
 /**
- * @brief       Constructor.
+ * @brief       Set factory function of logger.
  */
-LoggerFactory::LoggerFactory(::std::function<Logger &()> createLoggerCallback) :
-    m_createLoggerCallback(::std::move(createLoggerCallback))
+void LoggerFactory::setFactoryFunc(::std::function<Logger &()> factoryFunc)
 {
-    this->setInitializeResult(Result<void, Error>::makeOk());
+    LoggerFactory::callback() = ::std::move(factoryFunc);
 }
 
 /**
  * @brief       Get logger.
+ *
+ * @return      Logger.
  */
 Logger &LoggerFactory::logger()
 {
-    if (LoggerFactory::instanceInitialized()) {
-        return DefaultLogger::getLogger();
+    if (LoggerFactory::callback()) {
+        return LoggerFactory::callback()();
 
     } else {
-        auto instance = LoggerFactory::instance();
-        return instance->m_createLoggerCallback();
+        return DefaultLogger::getLogger();
     }
+}
+
+/**
+ * @brief       Get logger callback.
+ */
+::std::function<Logger &()> &LoggerFactory::callback()
+{
+    static ::std::function<Logger &()> ret;
+    return ret;
 }
 
 } // namespace remotePortMapper

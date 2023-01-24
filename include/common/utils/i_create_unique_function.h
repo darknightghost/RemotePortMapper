@@ -36,21 +36,17 @@ class ICreateUniqueFunc : virtual public IInitializeResult {
      *
      * @return      Object created or error infomation.
      */
-    static Result<::std::unique_ptr<Type>, Error> create(Args... args)
-    {
-        ::std::unique_ptr<Type> ret(new Type(::std::forward<Args>(args)...));
-        auto                    result = ret->takeInitializeResult();
-        if (result) {
-            return Result<::std::shared_ptr<Type>, Error>::makeOk(
-                ::std::move(ret));
-        } else {
-            return Result<::std::shared_ptr<Type>, Error>::makeError(
-                ::std::move(result.template value<Error>()));
-        }
-    }
+    static inline Result<::std::unique_ptr<Type>, Error> create(Args... args);
 };
 
-#define CREATE_UNIQUE(Type, ...) \
-    friend class remotePortMapper::ICreateUniqueFunc<Type, ##__VA_ARGS__>;
+#define CREATE_UNIQUE(Type, ...)                                              \
+    friend class remotePortMapper::ICreateUniqueFunc<Type, ##__VA_ARGS__>;    \
+                                                                              \
+  public:                                                                     \
+    using ::remotePortMapper::ICreateUniqueFunc<Type, ##__VA_ARGS__>::create; \
+                                                                              \
+  private:
 
 } // namespace remotePortMapper
+
+#include <common/utils/i_create_unique_function.hpp>
