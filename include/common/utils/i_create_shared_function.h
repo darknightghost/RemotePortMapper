@@ -15,7 +15,6 @@ namespace remotePortMapper {
  * @tparam  Args    Types of the arguments of the constructor.
  */
 template<class Type, typename... Args>
-    requires ::std::is_constructible<Type, Args...>::value
 class ICreateSharedFunc : virtual public IInitializeResult {
   protected:
     /**
@@ -31,13 +30,13 @@ class ICreateSharedFunc : virtual public IInitializeResult {
 
   public:
     /**
-     * @brief       Initialize instance.
+     * @brief       Create object.
      *
      * @param       args    Arguments of the constructor.
      *
      * @return      Object created or error infomation.
      */
-    static Result<::std::shared_ptr<Type>, Error> initialize(Args &&...args)
+    static Result<::std::shared_ptr<Type>, Error> create(Args... args)
     {
         ::std::shared_ptr<Type> ret(new Type(::std::forward<Args>(args)...));
         auto                    result = ret->takeInitializeResult();
@@ -51,6 +50,6 @@ class ICreateSharedFunc : virtual public IInitializeResult {
 };
 
 #define CREATE_SHARED(Type, ...) \
-    friend class remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>;
+    friend class ::remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>;
 
 } // namespace remotePortMapper

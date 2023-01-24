@@ -15,7 +15,6 @@ namespace remotePortMapper {
  * @tparam  Args    Types of the arguments of the constructor.
  */
 template<class Type, typename... Args>
-    requires ::std::is_constructible<Type, Args...>::value
 class ICreateUniqueFunc : virtual public IInitializeResult {
   protected:
     /**
@@ -31,13 +30,13 @@ class ICreateUniqueFunc : virtual public IInitializeResult {
 
   public:
     /**
-     * @brief       Initialize instance.
+     * @brief       Create object.
      *
      * @param       args    Arguments of the constructor.
      *
      * @return      Object created or error infomation.
      */
-    static Result<::std::unique_ptr<Type>, Error> initialize(Args &&...args)
+    static Result<::std::unique_ptr<Type>, Error> create(Args... args)
     {
         ::std::unique_ptr<Type> ret(new Type(::std::forward<Args>(args)...));
         auto                    result = ret->takeInitializeResult();
