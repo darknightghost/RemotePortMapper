@@ -15,18 +15,18 @@ namespace remotePortMapper {
  * @tparam  Args    Types of the arguments of the constructor.
  */
 template<class Type, typename... Args>
-class ICreateSharedFunc : virtual public IInitializeResult {
+class ICreateSharedAsyncFunc : virtual public IInitializeResult {
   protected:
     /**
      * @brief       Constructor.
      */
-    ICreateSharedFunc() = default;
+    ICreateSharedAsyncFunc() = default;
 
   public:
     /**
      * #brief   Destructor.
      */
-    virtual ~ICreateSharedFunc() = default;
+    virtual ~ICreateSharedAsyncFunc() = default;
 
   public:
     /**
@@ -39,12 +39,14 @@ class ICreateSharedFunc : virtual public IInitializeResult {
     static inline Result<::std::shared_ptr<Type>, Error> create(Args... args);
 };
 
-#define CREATE_SHARED(Type, ...)                                              \
-    friend class ::remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>;  \
-                                                                              \
-  public:                                                                     \
-    using ::remotePortMapper::ICreateSharedFunc<Type, ##__VA_ARGS__>::create; \
-                                                                              \
+#define CREATE_SHARED(Type, ...)                                             \
+    friend class ::remotePortMapper::ICreateSharedAsyncFunc<Type,            \
+                                                            ##__VA_ARGS__>;  \
+                                                                             \
+  public:                                                                    \
+    using ::remotePortMapper::ICreateSharedAsyncFunc<Type,                   \
+                                                     ##__VA_ARGS__>::create; \
+                                                                             \
   private:
 
 } // namespace remotePortMapper

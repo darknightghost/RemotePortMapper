@@ -5,8 +5,9 @@
 
 #include <common/thread_pool/thread_pool.h>
 
-TEST(ThreadPool, alarm)
+TEST(ThreadPoolDeathTest, alarm)
 {
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
     auto result = ::remotePortMapper::ThreadPool::create();
     ASSERT_TRUE(result);
     auto threadPool
