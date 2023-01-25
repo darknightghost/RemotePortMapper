@@ -42,52 +42,54 @@ target_link_libraries (
     RemotePortMapperCommon
 )
 
-# Node common.
-file (GLOB_RECURSE NODE_COMMON_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_common/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_common/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_common/*.cc"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_common/*.C"
+# Server.
+file (GLOB_RECURSE SERVER_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/*.C"
     )
 
-add_library (RemotePortMapperNodeCommon STATIC
-    ${NODE_COMMON_SOURCES}
-)
-
-
-# Node.
-file (GLOB_RECURSE NODE_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node/*.cc"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node/*.C"
-    )
-
-add_executable (RemotePortMapperNode
-    ${NODE_SOURCES}
+add_executable (RemotePortMapperServer 
+    ${SERVER_SOURCES}
 )
 
 target_link_libraries (
-    RemotePortMapperNode
-    RemotePortMapperNodeCommon
+    RemotePortMapperServer
     RemotePortMapperCommon
 )
 
-# Node GUI.
-file (GLOB_RECURSE NODE_GUI_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_gui/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_gui/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_gui/*.cc"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/node_gui/*.C"
+# Client.
+file (GLOB_RECURSE CLIENT_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client/*.C"
     )
 
-add_executable (RemotePortMapperNodeGUI
-    ${NODE_GUI_SOURCES}
+add_executable (RemotePortMapperClient 
+    ${CLIENT_SOURCES}
 )
 
 target_link_libraries (
-    RemotePortMapperNodeGUI
-    RemotePortMapperNodeCommon
+    RemotePortMapperClient
+    RemotePortMapperCommon
+)
+
+# Client GUI.
+file (GLOB_RECURSE CLIENT_GUI_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client_gui/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client_gui/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client_gui/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/client_gui/*.C"
+    )
+
+add_executable (RemotePortMapperClientGUI 
+    ${CLIENT_GUI_SOURCES}
+)
+
+target_link_libraries (
+    RemotePortMapperClientGUI
     RemotePortMapperCommon
 )
 
