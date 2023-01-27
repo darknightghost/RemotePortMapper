@@ -40,6 +40,7 @@ add_executable (RemotePortMapperRouter
 target_link_libraries (
     RemotePortMapperRouter
     RemotePortMapperCommon
+    ${DEPENDENCE_LIBS}
 )
 
 # Server.
@@ -57,6 +58,7 @@ add_executable (RemotePortMapperServer
 target_link_libraries (
     RemotePortMapperServer
     RemotePortMapperCommon
+    ${DEPENDENCE_LIBS}
 )
 
 # Client.
@@ -74,6 +76,7 @@ add_executable (RemotePortMapperClient
 target_link_libraries (
     RemotePortMapperClient
     RemotePortMapperCommon
+    ${DEPENDENCE_LIBS}
 )
 
 # Client GUI.
@@ -91,18 +94,27 @@ add_executable (RemotePortMapperClientGUI
 target_link_libraries (
     RemotePortMapperClientGUI
     RemotePortMapperCommon
+    ${DEPENDENCE_LIBS}
 )
 
 # Tests
 add_test_case (
     NAME            "alignment"
     LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
 )
 add_test_case (
     NAME            "result"
     LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
 )
 add_test_case (
     NAME            "thread_pool"
     LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
+)
+add_test_case (
+    NAME            "socket_address"
+    LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
 )

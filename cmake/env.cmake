@@ -150,6 +150,8 @@ else ()
 endif ()
 
 # Dependencies
+set (DEPENDENCE_LIBS        "")
+
 find_package (PythonInterp REQUIRED 3)
 
 find_package (OpenSSL REQUIRED COMPONENTS SSL Crypto)
@@ -168,3 +170,15 @@ if ("${Qt5Core_VERSION}" VERSION_LESS "5.14.1")
 
 endif ()
 
+if (WIN32)
+    list (APPEND    DEPENDENCE_LIBS
+        "ws2_32"
+    )
+
+elseif (UNIX)
+    list (APPEND    DEPENDENCE_LIBS
+        "pthread"
+        "anl"
+    )
+
+endif ()

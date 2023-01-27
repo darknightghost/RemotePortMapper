@@ -1,6 +1,6 @@
 #include <cstring>
 
-#include <common/socket/address.h>
+#include <common/socket/socket_address.h>
 
 namespace remotePortMapper {
 
