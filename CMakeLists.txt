@@ -118,3 +118,13 @@ add_test_case (
     LINK_LIBRARIES  "RemotePortMapperCommon"
                     ${DEPENDENCE_LIBS}
 )
+add_test_case (
+    NAME            "nargs"
+    LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
+)
+add_test_case (
+    NAME            "flags"
+    LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
+)

@@ -65,6 +65,8 @@ Result<void, Error> SocketAddress::fill(const ::std::string &ip, uint16_t port)
     void    *src;
     uint16_t port;
 
+    stream << "SocketAddress";
+
     switch (m_type) {
         case Type::IPv4: {
             family = AF_INET;
