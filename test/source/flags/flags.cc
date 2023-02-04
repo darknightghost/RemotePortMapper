@@ -29,9 +29,11 @@ TEST(Flags, all)
     }
     {
         TestFlags f(TestFlag::A);
-        ASSERT_TRUE(f.mask() & static_cast<int>(TestFlag::A));
-        ASSERT_FALSE(f.mask() & static_cast<int>(TestFlag::B));
-        ASSERT_FALSE(f.mask() & static_cast<int>(TestFlag::C));
+        ASSERT_EQ(f.mask() & static_cast<int>(TestFlag::A), 0);
+        ASSERT_EQ(f.mask() & static_cast<int>(TestFlag::B),
+                  static_cast<int>(TestFlag::B));
+        ASSERT_EQ(f.mask() & static_cast<int>(TestFlag::C),
+                  static_cast<int>(TestFlag::C));
     }
     {
         TestFlags tmp(TestFlag::B);
@@ -56,7 +58,7 @@ TEST(Flags, all)
         TestFlags f(TestFlag::A);
 
         ASSERT_TRUE((f & TestFlag::A).value() == static_cast<int>(TestFlag::A));
-        ASSERT_TRUE((f & TestFlags(TestFlag::B)).value()
+        ASSERT_TRUE((f & TestFlags(TestFlag::A)).value()
                     == static_cast<int>(TestFlag::A));
 
         ASSERT_TRUE((f & TestFlag::B).value() == 0);
