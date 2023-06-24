@@ -99,7 +99,12 @@ target_link_libraries (
 
 # Tests
 add_test_case (
-    NAME            "alignment"
+    NAME            "type_trait"
+    LINK_LIBRARIES  "RemotePortMapperCommon"
+                    ${DEPENDENCE_LIBS}
+)
+add_test_case (
+    NAME            "functional"
     LINK_LIBRARIES  "RemotePortMapperCommon"
                     ${DEPENDENCE_LIBS}
 )

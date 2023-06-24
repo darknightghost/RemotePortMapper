@@ -15,7 +15,7 @@
 #include <common/error/error.h>
 #include <common/types/result.h>
 
-#include <common/utils/i_to_string.h>
+#include <common/interfaces/i_to_string.h>
 
 namespace remotePortMapper {
 

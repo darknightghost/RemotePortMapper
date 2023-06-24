@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/utils/i_initialize_result.h>
+#include <common/interfaces/i_initialize_result.h>
 
 namespace remotePortMapper {
 

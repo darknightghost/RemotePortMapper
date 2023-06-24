@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <common/utils/type_traits.h>
+#include <common/types/type_traits.h>
 
 namespace remotePortMapper {
 

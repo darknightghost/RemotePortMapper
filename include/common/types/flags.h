@@ -127,4 +127,4 @@ class Flags {
 
 #define FLAGS_TYPE(...) __FLAGS_TYPE_IMPL(VA_NARGS(__VA_ARGS__), ##__VA_ARGS__)
 
-#include <common/utils/flags.hpp>
+#include <common/types/flags.hpp>

@@ -6,7 +6,7 @@
 
 #include <common/logger/logger.h>
 
-#include <common/utils/i_singelton.h>
+#include <common/interfaces/i_singelton.h>
 
 namespace remotePortMapper {
 

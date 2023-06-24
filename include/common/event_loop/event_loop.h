@@ -14,8 +14,18 @@ class EventLoop {
      * @brief   Event.
      */
     enum class Event {
-        Read,  ///< Read event.
-        Write, ///< Write event.
+#if defined(OS_WINDOWS)
+        ReadCompleted, ///< Read completed event.
+        WriteCompled,  ///< Write completed event.
+
+#elif defined(OS_LINUX)
+        Readable,  ///< Readable event.
+        Writeable, ///< Writebale event.
+
+#else
+    #error Target platform not supported.
+
+#endif
     };
 };
 

@@ -9,7 +9,8 @@
 #include <set>
 #include <thread>
 
-#include <common/utils/i_create_shared_function.h>
+#include <common/functional/move_only_function.h>
+#include <common/interfaces/i_create_shared_function.h>
 
 namespace remotePortMapper {
 
@@ -27,7 +28,7 @@ class ThreadPool :
     /**
      * @brief   Task to call.
      */
-    using Task = ::std::function<void()>;
+    using Task = MoveOnlyFunction<void()>;
 
   private:
     /**

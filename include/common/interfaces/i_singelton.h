@@ -6,7 +6,7 @@
 
 #include <common/logger/logger.h>
 
-#include <common/utils/i_initialize_result.h>
+#include <common/interfaces/i_initialize_result.h>
 
 namespace remotePortMapper {
 
@@ -70,4 +70,4 @@ class ISingleton : virtual public IInitializeResult {
 
 } // namespace remotePortMapper
 
-#include <common/utils/i_singelton.hpp>
+#include <common/interfaces/i_singelton.hpp>

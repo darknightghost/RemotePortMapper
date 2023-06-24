@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <common/utils/i_initialize_result.h>
+#include <common/interfaces/i_initialize_result.h>
 
 namespace remotePortMapper {
 
@@ -49,4 +49,4 @@ class ICreateSharedFunc : virtual public IInitializeResult {
 
 } // namespace remotePortMapper
 
-#include <common/utils/i_create_shared_function.hpp>
+#include <common/interfaces/i_create_shared_function.hpp>

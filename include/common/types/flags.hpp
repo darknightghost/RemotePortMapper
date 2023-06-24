@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/utils/flags.h>
+#include <common/types/flags.h>
 
 namespace remotePortMapper {
 

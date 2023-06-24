@@ -29,6 +29,21 @@ struct BufferSize;
 template<typename... Types>
 struct BufferAlignment;
 
+/**
+ * @brief       Checks if a pointer type can be invoked as a member function
+ *              pointer with the given argument types.
+ *
+ * @tparam      ClassType       Type of the class.
+ * @tparam      PointerType     Type of the pointer.
+ * @tparam      ReturnType      Type of the return value.
+ * @tparam      ArgTypes        Types of the arguments.
+ */
+template<class ClassType,
+         typename PointerType,
+         typename ReturnType,
+         typename... ArgTypes>
+struct IsMemberFunctionPointerInvocable;
+
 } // namespace remotePortMapper
 
-#include <common/utils/type_traits.hpp>
+#include <common/types/type_traits.hpp>

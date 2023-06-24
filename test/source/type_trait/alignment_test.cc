@@ -4,9 +4,9 @@
 
 #include <test/common/TestClass.h>
 
-#include <common/utils/type_traits.h>
+#include <common/types/type_traits.h>
 
-TEST(Alignment, all)
+TEST(Type_trait, alignment)
 {
     ASSERT_EQ(4,
               (::remotePortMapper::BufferAlignment<uint32_t, uint8_t>::value));

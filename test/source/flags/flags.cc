@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include <common/utils/flags.h>
+#include <common/types/flags.h>
 
 enum class TestFlag { A = 0x01, B = 0x02, C = 0x04 };
 

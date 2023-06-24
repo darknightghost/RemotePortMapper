@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include <common/utils/type_traits.h>
+#include <common/types/type_traits.h>
 
 namespace remotePortMapper {
 
@@ -162,5 +162,34 @@ struct BufferAlignment {
     static inline constexpr ::std::size_t value
         = __BufferAlignmentImpl<Types...>::value;
 };
+
+/**
+ * @brief       Checks if a pointer type can be invoked as a member function
+ *              pointer with the given argument types.
+ */
+template<class ClassType,
+         typename PointerType,
+         typename ReturnType,
+         typename... ArgTypes>
+struct IsMemberFunctionPointerInvocable : public ::std::false_type {};
+
+/**
+ * @brief       Checks if a pointer type can be invoked as a member function
+ *              pointer with the given argument types.
+ */
+template<class ClassType,
+         typename PointerType,
+         typename ReturnType,
+         typename... ArgTypes>
+    requires ::std::is_member_function_pointer<PointerType>::value
+             && ::std::is_same<decltype((::std::declval<ClassType>()
+                                         .*(::std::declval<PointerType>()))(
+                                   ::std::declval<ArgTypes>()...)),
+                               ReturnType>::value
+struct IsMemberFunctionPointerInvocable<ClassType,
+                                        PointerType,
+                                        ReturnType,
+                                        ArgTypes...> :
+    public ::std::true_type {};
 
 } // namespace remotePortMapper

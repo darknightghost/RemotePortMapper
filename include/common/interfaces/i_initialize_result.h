@@ -50,4 +50,4 @@ class IInitializeResult {
 
 } // namespace remotePortMapper
 
-#include <common/utils/i_initialize_result.hpp>
+#include <common/interfaces/i_initialize_result.hpp>

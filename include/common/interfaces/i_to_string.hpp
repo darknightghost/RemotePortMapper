@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include <common/utils/i_to_string.h>
+#include <common/interfaces/i_to_string.h>
 
 namespace remotePortMapper {
 

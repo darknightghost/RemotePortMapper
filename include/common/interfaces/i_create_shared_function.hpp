@@ -2,7 +2,7 @@
 
 #include <common/async_object/async_object.h>
 
-#include <common/utils/i_create_shared_function.h>
+#include <common/interfaces/i_create_shared_function.h>
 
 namespace remotePortMapper {
 
